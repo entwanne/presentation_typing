@@ -1,3 +1,4 @@
 jupyter
 rise
 git+ssh://git@github.com/entwanne/lucina.git#egg=lucina
+python-vlc
