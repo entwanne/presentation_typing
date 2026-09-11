@@ -1,0 +1,5 @@
+jupyter==1.0.0
+jupyter_core==4.11.1
+jupyter_client==7.3.5
+rise==5.7.1
+git+ssh://git@github.com/entwanne/lucina.git#egg=lucina
