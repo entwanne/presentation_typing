@@ -27,6 +27,7 @@ if sys.argv[1] == 'record':
         print(time.monotonic() - start, file=f)
 
         song.stop()
+    exit()
 
 elif sys.argv[1] == 'replay':
     import csv
@@ -49,3 +50,108 @@ elif sys.argv[1] == 'replay':
             time.sleep(next(records))
     print()
     song.stop()
+    exit()
+
+import tkinter as tk
+
+root = tk.Tk()
+records = []
+
+import csv
+with lyrics_path.open() as f:
+    reader = csv.reader(f, delimiter="|")
+    syllables = [syllable for line in reader for syllable in line]
+
+class Timer:
+    def __init__(self, rate=1):
+        self.reset()
+        self.rate = rate
+
+    def start(self):
+        self.last_tick = time.monotonic()
+
+    def pause(self):
+        self.previous += self._tick()
+
+    def reset(self):
+        self.last_tick = None
+        self.previous = 0
+
+    def _tick(self):
+        current = time.monotonic()
+        elapsed = current - self.last_tick
+        self.last_tick = current
+        return elapsed
+
+    def tick(self):
+        elapsed = self._tick() + self.previous
+        self.previous = 0
+        return elapsed * self.rate
+
+rate = 0.4
+timer = Timer(rate)
+sit = None
+
+def play_cmd():
+    global sit
+
+    if song.get_time() < 0: # Song was stopped
+        records.clear()
+        song.play()
+        song.set_time(seek)
+        song.set_rate(rate)
+        sit = iter(syllables)
+        print(next(sit))
+    else:
+        song.play()
+    timer.start()
+
+    play_button.configure(state='disabled')
+    pause_button.configure(state='normal')
+    stop_button.configure(state='normal')
+    tempo_button.configure(state='normal')
+
+def pause_cmd():
+    song.pause()
+    timer.pause()
+
+    play_button.configure(state='normal')
+    pause_button.configure(state='disabled')
+    stop_button.configure(state='normal')
+    tempo_button.configure(state='disabled')
+
+def stop_cmd():
+    song.stop()
+    timer.reset()
+
+    play_button.configure(state='normal')
+    pause_button.configure(state='disabled')
+    stop_button.configure(state='disabled')
+    tempo_button.configure(state='disabled')
+
+def tempo_cmd():
+    t = timer.tick()
+    print('Tempo', t, next(sit, None))
+    records.append(t)
+
+def save_cmd():
+    with record_path.open('w') as f:
+        for record in records:
+            print(record, file=f)
+
+play_button = tk.Button(root, text='Play', command=play_cmd)
+play_button.pack()
+
+pause_button = tk.Button(root, text='Pause', state='disabled', command=pause_cmd)
+pause_button.pack()
+
+stop_button = tk.Button(root, text='Stop', state='disabled', command=stop_cmd)
+stop_button.pack()
+
+tempo_button = tk.Button(root, text='Tempo', state='disabled', command=tempo_cmd)
+tempo_button.pack()
+
+save_button = tk.Button(root, text='Save', command=save_cmd)
+save_button.pack()
+
+root.mainloop()
