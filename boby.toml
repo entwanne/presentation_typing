@@ -1,0 +1,9 @@
+[audio]
+source = "~/Music/Boby_Lapointe/Ta_Katie_t_as_quitte.mp3"
+start = "00:36"
+
+[lyrics]
+path = "song.lr"
+
+[tempo]
+path = "song.tp"
