@@ -129,9 +129,9 @@ def stop_cmd():
     stop_button.configure(state='disabled')
     tempo_button.configure(state='disabled')
 
-x = 50
-y = 50
-texts = []
+#x = 50
+#y = 50
+#texts = []
 
 def tempo_cmd():
     global x, y
@@ -139,14 +139,17 @@ def tempo_cmd():
     syllable = next(sit, None)
     if syllable is not None:
         print('Tempo', t, syllable)
-        for tid in texts:
-            canvas.delete(tid)
-        texts.clear()
-        texts.append(canvas.create_text((x, y), text=syllable, fill="#0000ff", font=("Arial", 30)))
+        #for tid in texts:
+        #    canvas.delete(tid)
+        #texts.clear()
+        #texts.append(canvas.create_text((x, y), text=syllable, fill="#0000ff", font=("Arial", 30)))
         #x += 50
         #if x > 300:
         #    x = 50
         #    y += 50
+        text.insert(tk.END, syllable)
+        text.tag_add("start", "1.8", "1.13") # (y=1, x=8, y2=1, x2=13)
+        text.tag_config("start", background="black", foreground="red")
         records.append(t)
 
 def save_cmd():
@@ -169,8 +172,10 @@ tempo_button.pack()
 save_button = tk.Button(root, text='Save', command=save_cmd)
 save_button.pack()
 
-canvas = tk.Canvas()
+#canvas = tk.Canvas()
 #canvas.create_text((50, 50), text="toto", fill="#0000ff", font=("Arial", 30))
-canvas.pack()
+#canvas.pack()
+text = tk.Text()
+text.pack(expand=1, fill=tk.BOTH)
 
 root.mainloop()
