@@ -60,7 +60,11 @@ records = []
 import csv
 with lyrics_path.open() as f:
     reader = csv.reader(f, delimiter="|")
-    syllables = [syllable for line in reader for syllable in line]
+    all_syllables = []
+    for line in reader:
+        if line:
+            line[-1] += '\n'
+            all_syllables.extend(line)
 
 class Timer:
     def __init__(self, rate=1):
@@ -89,19 +93,20 @@ class Timer:
         return elapsed * self.rate
 
 rate = 0.4
+rate = 1
 timer = Timer(rate)
-sit = None
+syllables = None
 
 def play_cmd():
-    global sit
+    global syllables
 
     if song.get_time() < 0: # Song was stopped
         records.clear()
         song.play()
         song.set_time(seek)
         song.set_rate(rate)
-        sit = iter(syllables)
-        print(next(sit))
+        syllables = iter(all_syllables)
+        print(next(syllables))
     else:
         song.play()
     timer.start()
@@ -129,27 +134,17 @@ def stop_cmd():
     stop_button.configure(state='disabled')
     tempo_button.configure(state='disabled')
 
-#x = 50
-#y = 50
-#texts = []
-
 def tempo_cmd():
-    global x, y
     t = timer.tick()
-    syllable = next(sit, None)
+    syllable = next(syllables, None)
     if syllable is not None:
+        text.tag_remove("highlight", "1.0", tk.END)
         print('Tempo', t, syllable)
-        #for tid in texts:
-        #    canvas.delete(tid)
-        #texts.clear()
-        #texts.append(canvas.create_text((x, y), text=syllable, fill="#0000ff", font=("Arial", 30)))
-        #x += 50
-        #if x > 300:
-        #    x = 50
-        #    y += 50
-        text.insert(tk.END, syllable)
-        text.tag_add("start", "1.8", "1.13") # (y=1, x=8, y2=1, x2=13)
-        text.tag_config("start", background="black", foreground="red")
+        if syllable.endswith('\n'):
+            text.insert(tk.END, syllable.removesuffix('\n'), "highlight")
+            text.insert(tk.END, '\n')
+        else:
+            text.insert(tk.END, syllable, "highlight")
         records.append(t)
 
 def save_cmd():
@@ -172,10 +167,8 @@ tempo_button.pack()
 save_button = tk.Button(root, text='Save', command=save_cmd)
 save_button.pack()
 
-#canvas = tk.Canvas()
-#canvas.create_text((50, 50), text="toto", fill="#0000ff", font=("Arial", 30))
-#canvas.pack()
 text = tk.Text()
+text.tag_config("highlight", background="black", foreground="white")
 text.pack(expand=1, fill=tk.BOTH)
 
 root.mainloop()
