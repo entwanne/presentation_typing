@@ -58,6 +58,8 @@ for sentence, prev_sentences, next_sentences in iter_window(syllables, 1):
 
         current_line = 100
 
+        doc.append('<rect width="100%" height="100%" fill="#ffaaaa" />')
+
         for prev_sentence in prev_sentences:
             doc += [
                 f'<text style="font-size:100px;line-height:125%;font-family:\'Radio Canada Big\'" x="20" y="{current_line}">',
