@@ -75,6 +75,7 @@ class Config:
 
     @classmethod
     def argparse_loader(cls, parser=None, config_file=False):
+        # + allow custom aliases for arguments
         if parser is None:
             parser = argparse.ArgumentParser()
 
