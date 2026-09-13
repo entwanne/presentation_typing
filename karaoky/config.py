@@ -24,6 +24,9 @@ class Lyrics:
         for verse in self.verses:
             yield from verse
 
+    def __iter__(self):
+        return iter(self.verses)
+
 
 class Tempo(tuple[float, ...]):
     @classmethod
@@ -50,11 +53,15 @@ class Settings:
 
     @cached_property
     def lyrics(self):
+        if not self.config.lyrics.path:
+            raise ValueError
         with open(self.config.lyrics.path) as f:
             return Lyrics.from_file(f, separator=self.config.lyrics.separator)
 
     @cached_property
     def tempo(self):
+        if not self.config.tempo.path:
+            raise ValueError
         with open(self.config.tempo.path) as f:
             return Tempo.from_file(f)
 
@@ -64,3 +71,5 @@ if __name__ == '__main__':
     print(settings)
     print(settings.lyrics)
     print(settings.tempo)
+    for syllable, duration in zip(settings.lyrics.syllables, settings.tempo):
+        print(syllable, duration)
