@@ -4,11 +4,7 @@ import itertools
 import subprocess
 from pathlib import Path
 
-CWD = Path('.')
-
-with (CWD / 'song.lr').open() as f:
-    reader = csv.reader(f, delimiter="|")
-    syllables = [tuple(line) for line in reader]
+from .settings import settings
 
 
 def iter_window(iterable, n=None, *, before=None, after=None):
@@ -40,7 +36,7 @@ def iter_window(iterable, n=None, *, before=None, after=None):
                 pass
 
 
-output = CWD / 'output'
+output = Path('output')
 output.mkdir(exist_ok=True)
 
 doc = [
@@ -48,6 +44,8 @@ doc = [
     '<svg width="1280" height="800" xmlns="http://www.w3.org/2000/svg">',
 ]
 layers = []
+
+syllables = settings.lyrics
 
 for sentence, prev_sentences, next_sentences in iter_window(syllables, 1):
     for syllable, prev_syllables, next_syllables in iter_window(sentence):

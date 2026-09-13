@@ -3,16 +3,13 @@ import sys
 import vlc
 from pathlib import Path
 
-CWD = Path('.')
-record_path = CWD / 'song.tp'
-lyrics_path = CWD / 'song.lr'
-song_path = '/home/antoine/Music/Boby_Lapointe/Ta_Katie_t_as_quitte.mp3'
+from .settings import settings
 
-song = vlc.MediaPlayer(song_path)
-seek = 36 * 1000
+song = vlc.MediaPlayer(settings.audio_source)
+seek = int(settings.audio_start * 1000)
 
 if sys.argv[1] == 'record':
-    with record_path.open('w') as f:
+    with settings.tempo_path.open('w') as f:
 
         input('Tap a first time to start recording ')
         song.play()
@@ -32,22 +29,17 @@ if sys.argv[1] == 'record':
 elif sys.argv[1] == 'replay':
     import csv
 
-    with record_path.open() as f:
-        records = iter([float(line) for line in f])
-
-    with lyrics_path.open() as f:
-        reader = csv.reader(f, delimiter="|")
-        syllables = [tuple(line) for line in reader]
+    tempo = iter(settings.tempo)
 
     song.play()
     song.set_time(seek)
 
-    for sentence in syllables:
-        for i, syllable in enumerate(sentence):
+    for verse in settings.lyrics:
+        for i, syllable in enumerate(verse):
             if not i:
                 print()
             print(syllable, end='', flush=True)
-            time.sleep(next(records))
+            time.sleep(next(tempo))
     print()
     song.stop()
     exit()
@@ -57,14 +49,12 @@ import tkinter as tk
 root = tk.Tk()
 records = []
 
-import csv
-with lyrics_path.open() as f:
-    reader = csv.reader(f, delimiter="|")
-    all_syllables = []
-    for line in reader:
-        if line:
-            line[-1] += '\n'
-            all_syllables.extend(line)
+all_syllables = []
+for verse in settings.lyrics:
+    if verse := list(verse):
+        verse[-1] += '\n'
+        all_syllables.extend(verse)
+
 
 class Timer:
     def __init__(self, rate=1):
@@ -148,7 +138,7 @@ def tempo_cmd():
         records.append(t)
 
 def save_cmd():
-    with record_path.open('w') as f:
+    with settings.tempo_path.open('w') as f:
         for record in records:
             print(record, file=f)
 

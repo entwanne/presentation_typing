@@ -1,5 +1,8 @@
 import subprocess
 from pathlib import Path
+
+from .settings import settings
+
 output = Path('output')
 
 layers = sorted(output.glob('layer*.png'))
@@ -7,11 +10,9 @@ layers = sorted(output.glob('layer*.png'))
 concat = output / 'concat'
 lines = ['ffconcat version 1.0']
 
-with open('song.tp') as f:
-    durations = [float(line) for line in f]
+durations = settings.tempo
 
 layers.append(layers[-1])
-durations.append(1)
 lines += [
     line
     for layer, duration in zip(layers, durations)
@@ -20,13 +21,14 @@ lines += [
 
 concat.write_text('\n'.join(lines))
 
-minutes, seconds = divmod(sum(durations), 60)
+sminutes, sseconds = divmod(settings.audio_start, 60)
+dminutes, dseconds = divmod(sum(durations), 60)
 
 subprocess.run([
     'ffmpeg',
-    '-i', '/home/antoine/Music/Boby_Lapointe/Ta_Katie_t_as_quitte.mp3',
-    '-ss', '0:00:36',
-    '-t', f'00:{int(minutes)}:{seconds}',
+    '-i', settings.audio_source,
+    '-ss', f'{int(sminutes)}:{sseconds}',
+    '-t', f'00:{int(dminutes)}:{dseconds}',
     '-c:a', 'copy',
     output / 'audio.mp3',
 ])
