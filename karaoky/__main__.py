@@ -54,23 +54,23 @@ for sentence, prev_sentences, next_sentences in iter_window(syllables, 1):
 
         doc.append(f'<g id="{layer_id}">')
 
-        current_line = 100
+        current_line = 200
 
-        doc.append('<rect width="100%" height="100%" fill="#ffaaaa" />')
+        doc.append('<rect width="100%" height="100%" fill="#fffaf5" />')
 
         for prev_sentence in prev_sentences:
             doc += [
                 f'<text style="font-size:100px;line-height:125%;font-family:\'Radio Canada Big\'" x="20" y="{current_line}">',
-                f'<tspan style="fill:#ffff00">{"".join(prev_sentence)}</tspan>',
+                f'<tspan style="fill:#2454ff">{"".join(prev_sentence)}</tspan>',
                 '</text>',
             ]
             current_line += 200
 
         doc += [
             f'<text style="font-size:100px;line-height:125%;font-family:\'Radio Canada Big\'" x="20" y="{current_line}">',
-            f'<tspan style="fill:#ffff00">{"".join(prev_syllables).replace(" ", " ")}</tspan>',
-            f'<tspan style="fill:#ffff00">{syllable.replace(" ", " ")}</tspan>',
-            f'<tspan style="fill:#0000ff">{"".join(next_syllables).replace(" ", " ")}</tspan>',
+            f'<tspan style="fill:#2454ff">{"".join(prev_syllables).replace(" ", " ")}</tspan>',
+            f'<tspan style="fill:#2454ff">{syllable.replace(" ", " ")}</tspan>',
+            f'<tspan style="fill:#000a29">{"".join(next_syllables).replace(" ", " ")}</tspan>',
             '</text>',
         ]
         current_line += 200
@@ -78,7 +78,7 @@ for sentence, prev_sentences, next_sentences in iter_window(syllables, 1):
         for next_sentence in next_sentences:
             doc += [
                 f'<text style="font-size:100px;line-height:125%;font-family:\'Radio Canada Big\'" x="20" y="{current_line}">',
-                f'<tspan style="fill:#0000ff">{"".join(next_sentence)}</tspan>',
+                f'<tspan style="fill:#000a29">{"".join(next_sentence)}</tspan>',
                 '</text>',
             ]
             current_line += 200
