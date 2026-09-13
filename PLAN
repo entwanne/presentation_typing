@@ -1,0 +1,47 @@
+# Python & typing
+
+- Typage en Python : fort mais dynamique
+- Typage structurel / duck typing
+- Spécificités du typage : isinstance / classes abstraites / subclasshooks
+
+# Annotations
+
+- Possible de typage statique depuis Python 3.5 et versions successives avec les annotations
+    - possibilité de typage à l'aide de commentaires
+- Outils d'analyse statique qui se sont développés
+- Bibliothèques qui exploitent dynamiquement ces annotations (pydantic, fastapi)
+
+- Syntaxe des annotations
+- Types génériques et composés
+- Évaluation différée
+
+# Typage statique
+
+- Utiliser les annotations de types 
+- mypy, ty, pyright
+- Module typing
+    - Any
+    - collections.abc
+    - Génériques, Protocoles
+
+# Annotationlib
+
+- accéder dynamiquement aux annotations
+- annotationlib
+- signature de fonction
+- écrire un analyseur dynamique
+    - ne couvre pas toutes les branches mais seulement celles qui sont évaluées
+
+# Analyseur statique
+
+- Accès aux annotations depuis l'AST
+    - Module ast, ast.NodeVisitor
+    - visit_AnnAssign, visit_Assign
+- Résolution des annotations
+    - Types des littéraux
+- Typage plus complet
+    - visit_FunctionDef, visit_Call
+    - visit_AugAssign, visit_AsyncFunctionDef, visit_ClassDef
+    - Couverture des branches, gestion des (in)compatibilités
+    - Ensembles de types permis pour une variable, unions et intersections de types
+- Inférence de type
