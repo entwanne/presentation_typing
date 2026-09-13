@@ -9,12 +9,13 @@ UNSET = object()
 
 
 class ConfigBlock:
-    def __init__(self, loader):
+    def __init__(self, config, loader):
+        self.config = config
         self.loader = loader
 
     @cached_property
     def content(self):
-        return self.loader()
+        return self.loader(self.config)
 
     def get(self, key):
         return self.content.get(key, UNSET)
@@ -23,6 +24,11 @@ class ConfigBlock:
 class Config:
     def __init_subclass__(cls):
         cls.config_items = annotationlib.get_annotations(cls)
+        cls.defaults = {
+            name: default
+            for name in cls.config_items
+            if (default := cls.__dict__.get(name, UNSET)) is not UNSET
+        }
         for name in cls.config_items:
             setattr(cls, name, property(cls._get_config_item(name)))
 
@@ -33,19 +39,29 @@ class Config:
                 value = block.get(name)
                 if value is not UNSET:
                     return value
-            return None
+            value = self.defaults.get(name, UNSET)
+            if value is not UNSET:
+                return value
+            raise AttributeError
         return getter
 
     @classmethod
-    def argparse_loader(cls, parser=None):
+    def argparse_loader(cls, parser=None, config_file=False):
         if parser is None:
             parser = argparse.ArgumentParser()
+
         for name in cls.config_items:
             arg_name = name.replace('_', '-')
             parser.add_argument(f'--{arg_name}', dest=name, default=UNSET)
 
-        def loader():
-            return vars(parser.parse_args())
+        if config_file:
+            parser.add_argument('--config', '-c')
+
+        def loader(self):
+            values = vars(parser.parse_args())
+            if config_file and (config_path := values.pop('config')):
+                self.add_loader(cls.toml_loader(config_path))
+            return values
 
         return loader
 
@@ -53,19 +69,31 @@ class Config:
     def toml_loader(cls, path):
         path = Path(path)
 
-        def loader():
+        def loader(self):
             with path.open('rb') as f:
                 return tomllib.load(f)
 
         return loader
 
+    @classmethod
+    def default_setup(cls):
+        return cls(cls.argparse_loader(config_file=True))
+
     def __init__(self, *loaders):
-        self.blocks = [ConfigBlock(loader) for loader in loaders]
+        self.blocks = [ConfigBlock(self, loader) for loader in loaders]
+
+    def add_loader(self, loader):
+        self.blocks.append(ConfigBlock(self, loader))
+
+    def load(self):
+        for name in type(self).config_items:
+            getattr(self, name)
 
 
 class A(Config):
     audio_path: str | None = None
 
 
-config = A(A.argparse_loader(), A.toml_loader('toto.toml'))
+config = A.default_setup()
+#config.load()
 print(config.audio_path)
