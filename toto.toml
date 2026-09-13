@@ -1,1 +1,2 @@
-audio_path = "toto"
+[audio]
+path = "tutu"

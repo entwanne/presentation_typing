@@ -29,6 +29,23 @@ class Config:
             for name in cls.config_items
             if (default := cls.__dict__.get(name, UNSET)) is not UNSET
         }
+
+        for name, value in cls.__dict__.items():
+            if isinstance(value, type):
+                annotations = annotationlib.get_annotations(value)
+                cls.config_items.update({
+                    # + handle recursively
+                    # -> have a function that returns dict[name, (annotation, default)] recursively
+                    f'{name}.{name2}': annotation
+                    for name2, annotation in annotations.items()
+                })
+                cls.defaults.update({
+                    f'{name}.{name2}': default
+                    for name2 in annotations
+                    if (default := value.__dict__.get(name2, UNSET)) is not UNSET
+                })
+                setattr(cls, name, property(cls._get_config_proxy(name)))
+
         for name in cls.config_items:
             setattr(cls, name, property(cls._get_config_item(name)))
 
@@ -45,13 +62,24 @@ class Config:
             raise AttributeError
         return getter
 
+    @staticmethod
+    def _get_config_proxy(name):
+        def getter(self):
+            class Proxy:
+                def __getattr__(s, name2):
+                    return getattr(self, f'{name}.{name2}')
+
+            return Proxy()
+
+        return getter
+
     @classmethod
     def argparse_loader(cls, parser=None, config_file=False):
         if parser is None:
             parser = argparse.ArgumentParser()
 
         for name in cls.config_items:
-            arg_name = name.replace('_', '-')
+            arg_name = name.replace('_', '-').replace('.', '-')
             parser.add_argument(f'--{arg_name}', dest=name, default=UNSET)
 
         if config_file:
@@ -71,7 +99,18 @@ class Config:
 
         def loader(self):
             with path.open('rb') as f:
-                return tomllib.load(f)
+                doc = tomllib.load(f)
+
+                output = {}
+                # + explore recursively
+                for name, value in doc.items():
+                    if isinstance(value, dict):
+                        for name2, value in value.items():
+                            output[f'{name}.{name2}'] = value
+                    else:
+                        output[name] = value
+
+                return output
 
         return loader
 
@@ -80,6 +119,9 @@ class Config:
         return cls(cls.argparse_loader(config_file=True))
 
     def __init__(self, *loaders):
+        # -> use a tree instead of a single list
+        # or allow to appender a loader just after an existing one
+        # (so that we can use defaults as a loader + env var, while config file from argparse would still be prior to defaults or env vars)
         self.blocks = [ConfigBlock(self, loader) for loader in loaders]
 
     def add_loader(self, loader):
@@ -90,10 +132,13 @@ class Config:
             getattr(self, name)
 
 
-class A(Config):
-    audio_path: str | None = None
+if __name__ == '__main__':
+    class A(Config):
+        class audio: # Make inherit from Subconfig class?
+            path: str | None = None
+            #duration: int
 
 
-config = A.default_setup()
-#config.load()
-print(config.audio_path)
+    config = A.default_setup()
+    #config.load()
+    print(config.audio.path)
