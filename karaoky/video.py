@@ -29,7 +29,7 @@ subprocess.run([
     '-i', settings.audio_source,
     '-ss', f'{int(sminutes)}:{sseconds}',
     '-t', f'00:{int(dminutes)}:{dseconds}',
-    '-c:a', 'copy',
+    '-c:a', 'libmp3lame',
     output / 'audio.mp3',
 ])
 

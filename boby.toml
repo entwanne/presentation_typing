@@ -1,6 +1,8 @@
 [audio]
-source = "~/Music/Boby_Lapointe/Ta_Katie_t_as_quitte.mp3"
-start = "00:36"
+#source = "~/Music/Boby_Lapointe/Ta_Katie_t_as_quitte.mp3"
+#start = "00:36"
+source = "karaoke_fond.mp4"
+start = "00:37.4"
 
 [lyrics]
 path = "song.lr"
