@@ -1,8 +1,8 @@
 import ast
 import typing
 
-from . import error
-from .object import PyObject, TypeForm, Callable, NoValue
+from . import builtins, error
+from .object import PyObject, TypeForm, Callable, Value, NoValue
 
 if typing.TYPE_CHECKING:
     from .visitor import TypingVisitor
@@ -49,6 +49,27 @@ def check_assign(visitor: TypingVisitor, target_node: ast.AST, value_node: ast.A
 
     if not annotation.match(value):
         visitor.add_error(error.AssignmentError, dest=varname, annotation=annotation, type=value.type)
+
+
+def check_operation(visitor: TypingVisitor, operator: type[ast.operator], left: PyObject, right: PyObject) -> PyObject:
+    'Helper function to check that an operation is valid'
+    if left is NoValue or right is NoValue:
+        return NoValue
+
+    if operator is ast.BitOr and isinstance(left, TypeForm) and isinstance(right, TypeForm):
+        return left | right
+
+    if operator is ast.Add and left.type is builtins.int and right.type is builtins.int:
+        return Value(type=builtins.int)
+
+    if operator is ast.Add and left.type is builtins.str and right.type is builtins.str:
+        return Value(type=builtins.str)
+
+    if operator is ast.Add and left.type is builtins.float and right.type in (builtins.float, builtins.int):
+        return Value(type=builtins.float)
+
+    visitor.add_error(error.ExpressionError, operation=operator.__name__, values=(left, right))
+    return NoValue
 
 
 def check_call(visitor: TypingVisitor, func: PyObject, args: tuple[PyObject, ...]) -> PyObject:
