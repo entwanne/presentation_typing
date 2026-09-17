@@ -4,7 +4,7 @@ import typing
 
 from . import builtins, checker, error
 from .context import Context, Cursor, new_layer
-from .object import Value, Function, PyObject, Type, TypeForm, NoType, NoValue
+from .object import Callable, Value, Function, PyObject, Type, TypeForm, NoType, NoValue
 
 
 class TypingVisitor(ast.NodeVisitor):
@@ -66,7 +66,16 @@ class TypingVisitor(ast.NodeVisitor):
     def visit_BinOp(self, node: ast.BinOp) -> PyObject:
         left = self.visit(node.left)
         right = self.visit(node.right)
-        return checker.check_operation(self, type(node.op), left, right)
+        return checker.check_operation(
+            self,
+            type(node.op),
+            (left, right),
+            error_args={
+                'error_type': error.ExpressionError,
+                'operation': type(node.op).__name__,
+                'values': (left, right),
+            }
+        )
 
     def visit_Name(self, node: ast.Name) -> PyObject:
         if node.id in self.namespace:
@@ -79,7 +88,16 @@ class TypingVisitor(ast.NodeVisitor):
     def visit_Call(self, node: ast.Call) -> PyObject:
         func = self.visit(node.func)
         args = tuple(self.visit(arg) for arg in node.args)
-        return checker.check_call(self, func, args)
+        return checker.check_operation(
+            self,
+            ast.Call,
+            (func, *args),
+            error_args={
+                'error_type': error.CallError,
+                'function': func.name if isinstance(func, Callable) else '',
+                'args': args,
+            }
+        )
 
     def visit_Assign(self, node: ast.Assign) -> NoValue:
         for target in node.targets:
@@ -102,6 +120,7 @@ class TypingVisitor(ast.NodeVisitor):
         class_def = Type(
             name=node.name,
             bases=tuple(checker.check_type(self, base) for base in node.bases),
+            methods={},
         )
 
         self.namespace[node.name] = class_def

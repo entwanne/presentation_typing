@@ -3,12 +3,16 @@ import typing
 
 from .base import TypeForm
 
+if typing.TYPE_CHECKING:
+    from .function import Callable
+
 
 @dataclasses.dataclass(frozen=True)
 class Type(TypeForm):
-    "Concrete type with bases"
+    "Concrete type with bases & methods"
     name: str
     bases: tuple[TypeForm, ...]
+    methods: dict[str, Callable] = dataclasses.field(repr=False)
 
     def __le__(self, rhs: TypeForm) -> bool:
         if self.bases:

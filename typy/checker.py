@@ -1,11 +1,28 @@
 import ast
 import typing
 
-from . import builtins, error
-from .object import PyObject, TypeForm, Callable, Value, NoValue
+from . import error
+from .object import PyObject, Type, TypeForm, Method, NoValue
 
 if typing.TYPE_CHECKING:
     from .visitor import TypingVisitor
+
+
+operators = {
+    ast.BitOr: '__or__',
+    ast.Add: '__add__',
+    ast.Call: '__call__',
+}
+
+
+def get_method(value: PyObject, method_name: str) -> Method:
+    'Helper function to get the method of an object'
+    if not isinstance(value.type, Type):
+        return NoValue
+    function = value.type.methods.get(method_name, NoValue)
+    if function is NoValue:
+        return NoValue
+    return function.bind(value)
 
 
 def check_type(visitor: TypingVisitor, node: ast.AST) -> TypeForm:
@@ -51,37 +68,24 @@ def check_assign(visitor: TypingVisitor, target_node: ast.AST, value_node: ast.A
         visitor.add_error(error.AssignmentError, dest=varname, annotation=annotation, type=value.type)
 
 
-def check_operation(visitor: TypingVisitor, operator: type[ast.operator], left: PyObject, right: PyObject) -> PyObject:
+def check_operation(visitor: TypingVisitor, operator: type[ast.operator | ast.Call], args: tuple[PyObject, ...], error_args: dict[str, typing.Any]) -> PyObject:
     'Helper function to check that an operation is valid'
-    if left is NoValue or right is NoValue:
+    if not args or any(arg is NoValue for arg in args):
         return NoValue
 
-    if operator is ast.BitOr and isinstance(left, TypeForm) and isinstance(right, TypeForm):
-        return left | right
-
-    if operator is ast.Add and left.type is builtins.int and right.type is builtins.int:
-        return Value(type=builtins.int)
-
-    if operator is ast.Add and left.type is builtins.str and right.type is builtins.str:
-        return Value(type=builtins.str)
-
-    if operator is ast.Add and left.type is builtins.float and right.type in (builtins.float, builtins.int):
-        return Value(type=builtins.float)
-
-    visitor.add_error(error.ExpressionError, operation=operator.__name__, values=(left, right))
-    return NoValue
-
-
-def check_call(visitor: TypingVisitor, func: PyObject, args: tuple[PyObject, ...]) -> PyObject:
-    'Helper function to check that an operation is valid'
-    if any(arg is NoValue for arg in args):
+    method_name = operators.get(operator)
+    if method_name is None:
+        visitor.add_error(**error_args)
         return NoValue
 
-    if isinstance(func, Callable) and func.match_args(*args):
-        return func.apply(*args)
+    value, args = args[0], args[1:]
+    method = get_method(value, method_name)
+    if method is NoValue:
+        visitor.add_error(**error_args)
+        return NoValue
 
-    if isinstance(func, TypeForm):
-        return Value(type=func)
+    if method.match_args(*args):
+        return method.apply(*args)
 
-    visitor.add_error(error.CallError, function=getattr(func, 'name', ''), args=args)
+    visitor.add_error(**error_args)
     return NoValue
