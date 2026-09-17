@@ -1,13 +1,27 @@
 import ast
 import builtins
-import sys
 
 
 class TypingVisitor(ast.NodeVisitor):
     'AST visitor to check types for assignments & operations'
 
-    def print_error(self, title, error, node) -> None:
-        print(f'{title} on line {node.lineno}: {error}')
+    def __init__(self):
+        self.filename = None
+
+    def print_error(self, title, error, node=None) -> None:
+        parts = [title]
+        if self.filename:
+            parts.append(f' on {self.filename}')
+            if node:
+                parts.append(f'::{node.lineno}')
+        parts.append(f': {error}')
+        print(''.join(parts))
+
+    # Entrypoints
+
+    def visit_file(self, node, filename):
+        self.filename = filename
+        return self.visit(node)
 
     # Node visit methods
 
@@ -27,14 +41,8 @@ class TypingVisitor(ast.NodeVisitor):
 
         annotation = self.visit(node.annotation)
         if not isinstance(annotation, type):
-            self.print_error('Error', f'{annotation!r} is not a type', node=annotation_node)
+            self.print_error('Error', f'{annotation!r} is not a type', node=node.annotation)
             return
 
         if not isinstance(value, annotation):
             self.print_error('Assignment error', f'Trying to assign value of type {type(value).__name__} to variable {node.target.id} annotated with {annotation.__name__}', node=node.target)
-
-
-if __name__ == '__main__':
-    visitor = TypingVisitor()
-    with open(sys.argv[1]) as f:
-        visitor.visit(ast.parse(f.read()))
