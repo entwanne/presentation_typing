@@ -58,3 +58,15 @@ class ExpressionError(BaseError):
             case (*left, right):
                 return f'Incompatible operation {self.operation} for values of types {", ".join(left)} and {right}'
         return ''
+
+
+@dataclasses.dataclass(frozen=True)
+class CallError(BaseError):
+    function: str
+    args: tuple
+
+    title: ClassVar[str] = 'Call error'
+
+    @property
+    def message(self) -> str:
+        return f'cannot call {self.function} with arg types {", ".join(arg.type.name for arg in self.args)}'

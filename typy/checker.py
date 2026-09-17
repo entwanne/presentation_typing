@@ -2,7 +2,7 @@ import ast
 import typing
 
 from . import error
-from .object import TypeForm, NoValue
+from .object import PyObject, TypeForm, Callable, NoValue
 
 if typing.TYPE_CHECKING:
     from .visitor import TypingVisitor
@@ -49,3 +49,15 @@ def check_assign(visitor: TypingVisitor, target_node: ast.AST, value_node: ast.A
 
     if not annotation.match(value):
         visitor.add_error(error.AssignmentError, dest=varname, annotation=annotation, type=value.type)
+
+
+def check_call(visitor: TypingVisitor, func: PyObject, args: tuple[PyObject, ...]) -> PyObject:
+    'Helper function to check that an operation is valid'
+    if any(arg is NoValue for arg in args):
+        return NoValue
+
+    if isinstance(func, Callable) and func.match_args(*args):
+        return func.apply(*args)
+
+    visitor.add_error(error.CallError, function=getattr(func, 'name', ''), args=args)
+    return NoValue

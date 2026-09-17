@@ -4,7 +4,7 @@ import typing
 
 from . import builtins, checker, error
 from .context import Context, Cursor, new_layer
-from .object import Value, PyObject, TypeForm, NoType, NoValue
+from .object import Value, Function, PyObject, TypeForm, NoType, NoValue
 
 
 class TypingVisitor(ast.NodeVisitor):
@@ -80,6 +80,11 @@ class TypingVisitor(ast.NodeVisitor):
         self.add_error(error.Error, message=f'{node.id} variable not found')
         return NoValue
 
+    def visit_Call(self, node: ast.Call) -> PyObject:
+        func = self.visit(node.func)
+        args = tuple(self.visit(arg) for arg in node.args)
+        return checker.check_call(self, func, args)
+
     def visit_Assign(self, node: ast.Assign) -> NoValue:
         for target in node.targets:
             checker.check_assign(self, target, node.value)
@@ -87,4 +92,12 @@ class TypingVisitor(ast.NodeVisitor):
 
     def visit_AnnAssign(self, node: ast.AnnAssign) -> NoValue:
         checker.check_assign(self, node.target, node.value, node.annotation)
+        return NoValue
+
+    def visit_FunctionDef(self, node: ast.FunctionDef) -> NoValue:
+        self.namespace[node.name] = Function(
+            name=node.name,
+            args=tuple(checker.check_type(self, arg.annotation) if arg.annotation else NoType for arg in node.args.args),
+            returns=checker.check_type(self, node.returns) if node.returns else NoType,
+        )
         return NoValue
