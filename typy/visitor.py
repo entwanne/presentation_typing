@@ -18,6 +18,10 @@ class TypingVisitor(ast.NodeVisitor):
         self.errors = []
 
     @property
+    def namespace(self) -> collections.abc.MutableMapping[str, PyObject]:
+        return self.context.namespace
+
+    @property
     def annotations(self) -> collections.abc.MutableMapping[str, TypeForm]:
         return self.context.annotations
 
@@ -69,10 +73,12 @@ class TypingVisitor(ast.NodeVisitor):
         return NoType
 
     def visit_Name(self, node: ast.Name) -> PyObject:
+        if node.id in self.namespace:
+            return self.namespace[node.id]
         if hasattr(builtins, node.id):
             return getattr(builtins, node.id)
-        self.add_error('Error', f'{node.id} type not found', node=node)
-        return NoType
+        self.add_error(error.Error, message=f'{node.id} variable not found')
+        return NoValue
 
     def visit_Assign(self, node: ast.Assign) -> NoValue:
         for target in node.targets:

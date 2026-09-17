@@ -45,6 +45,7 @@ def check_assign(visitor: TypingVisitor, target_node: ast.AST, value_node: ast.A
 
     if value is NoValue:
         return
+    visitor.namespace[varname] = value
 
     if not annotation.match(value):
         visitor.add_error(error.AssignmentError, dest=varname, annotation=annotation, type=value.type)
