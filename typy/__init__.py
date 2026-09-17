@@ -1,4 +1,5 @@
 import ast
+import sys
 from pathlib import Path
 
 from .visitor import TypingVisitor
@@ -23,6 +24,14 @@ class Typy:
         for path in paths:
             with open(path) as file:
                 self.run_file(file)
+
+    @property
+    def errors(self) -> list[str]:
+        return self.visitor.errors
+
+    def print_errors(self) -> None:
+        for error in self.errors:
+            print(error, file=sys.stderr)
 
 
 __all__ = ['Typy']

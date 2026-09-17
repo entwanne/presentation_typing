@@ -7,15 +7,16 @@ class TypingVisitor(ast.NodeVisitor):
 
     def __init__(self):
         self.filename = None
+        self.errors = []
 
-    def print_error(self, title, error, node=None) -> None:
+    def add_error(self, title, error, node=None) -> None:
         parts = [title]
         if self.filename:
             parts.append(f' on {self.filename}')
             if node:
                 parts.append(f'::{node.lineno}')
         parts.append(f': {error}')
-        print(''.join(parts))
+        self.errors.append(''.join(parts))
 
     # Entrypoints
 
@@ -31,7 +32,7 @@ class TypingVisitor(ast.NodeVisitor):
     def visit_Name(self, node) -> type | None:
         if hasattr(builtins, node.id):
             return getattr(builtins, node.id)
-        self.print_error('Error', f'{node.id} type not found', node=node)
+        self.add_error('Error', f'{node.id} type not found', node=node)
 
     def visit_AnnAssign(self, node):
         if node.value is None:
@@ -41,8 +42,8 @@ class TypingVisitor(ast.NodeVisitor):
 
         annotation = self.visit(node.annotation)
         if not isinstance(annotation, type):
-            self.print_error('Error', f'{annotation!r} is not a type', node=node.annotation)
+            self.add_error('Error', f'{annotation!r} is not a type', node=annotation.node)
             return
 
         if not isinstance(value, annotation):
-            self.print_error('Assignment error', f'Trying to assign value of type {type(value).__name__} to variable {node.target.id} annotated with {annotation.__name__}', node=node.target)
+            self.add_error('Assignment error', f'Trying to assign value of type {type(value).__name__} to variable {node.target.id} annotated with {annotation.__name__}', node=node.target)

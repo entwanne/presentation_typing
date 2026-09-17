@@ -16,6 +16,7 @@ def main(parser: argparse.ArgumentParser | None = None, input_args: tuple[str, .
 
     typy = Typy()
     typy.run_path(*args.files)
+    typy.print_errors()
 
 
 if __name__ == '__main__':
