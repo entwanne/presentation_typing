@@ -1,3 +1,5 @@
-jupyter
-jupyterlab-rise
-git+ssh://git@github.com/entwanne/lucina.git#egg=lucina
+notebook==6.*
+rise==5.*
+lucina==1.*
+fake_distutils @ git+https://github.com/entwanne/fake_distutils.git
+ipython_reopenclass @ git+https://github.com/entwanne/ipython_reopenclass.git
