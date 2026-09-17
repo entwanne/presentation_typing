@@ -80,5 +80,8 @@ def check_call(visitor: TypingVisitor, func: PyObject, args: tuple[PyObject, ...
     if isinstance(func, Callable) and func.match_args(*args):
         return func.apply(*args)
 
+    if isinstance(func, TypeForm):
+        return Value(type=func)
+
     visitor.add_error(error.CallError, function=getattr(func, 'name', ''), args=args)
     return NoValue
