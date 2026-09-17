@@ -1,6 +1,9 @@
 import ast
+import collections.abc
+import typing
 
-from . import builtins, checker
+from . import builtins, checker, error
+from .context import Context, Cursor, new_layer
 from .object import Value, PyObject, TypeForm, NoType, NoValue
 
 
@@ -8,33 +11,44 @@ class TypingVisitor(ast.NodeVisitor):
     'AST visitor to check types for assignments & operations'
 
     def __init__(self):
-        self.filename = None
-        self.annotations = {}
+        self.contexts = {}
+        self.context = None
+        self.cursor = Cursor()
+
         self.errors = []
 
-    def add_error(self, title: str, error: str, node=None) -> None:
-        parts = [title]
-        if self.filename:
-            parts.append(f' on {self.filename}')
-            if node:
-                parts.append(f'::{node.lineno}')
-        parts.append(f': {error}')
-        self.errors.append(''.join(parts))
+    @property
+    def annotations(self) -> collections.abc.MutableMapping[str, TypeForm]:
+        return self.context.annotations
+
+    def add_error(self, error_type: type[error.BaseError], **kwargs: typing.Any) -> None:
+        self.errors.append(error_type(**kwargs, cursor=self.cursor))
 
     # Entrypoints
 
-    def visit_file(self, node: ast.AST, filename: str) -> PyObject:
-        self.filename = filename
-        self.annotations.clear()
-        return self.visit(node)
+    def visit_file(self, tree: ast.AST, filename: str) -> PyObject:
+        self.contexts[filename] = Context(filename=filename)
+        with new_layer(
+                self,
+                context=self.contexts[filename],
+                cursor=self.cursor.replace(filename=filename),
+        ):
+            return self.visit(tree)
 
     def visit(self, node: ast.AST) -> PyObject:
         assert node is not None
 
-        value = super().visit(node)
-        if not isinstance(value, PyObject):
-            raise ValueError(f'Visit call returned a value of type {type(value).__qualname__} for node {type(node).__qualname__} which is not a PyObject')
-        return value
+        with new_layer(
+                self,
+                cursor=self.cursor.replace(
+                    line=getattr(node, 'lineno', None),
+                    col=getattr(node, 'col_offset', None),
+                ),
+        ):
+            value = super().visit(node)
+            if not isinstance(value, PyObject):
+                raise ValueError(f'Visit call returned a value of type {type(value).__qualname__} for node {type(node).__qualname__} which is not a PyObject')
+            return value
 
     # Node visit methods
 

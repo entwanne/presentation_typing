@@ -1,6 +1,7 @@
 import ast
 import typing
 
+from . import error
 from .object import TypeForm, NoValue
 
 if typing.TYPE_CHECKING:
@@ -12,7 +13,7 @@ def check_type(visitor: TypingVisitor, node: ast.AST) -> TypeForm:
     type = visitor.visit(node)
     if isinstance(type, TypeForm):
         return type
-    visitor.add_error('Error', f'{type!r} is not a type', node=node)
+    visitor.add_error(error.Error, message=f'{type!r} is not a type')
     return NoValue
 
 
@@ -30,7 +31,7 @@ def check_assign(visitor: TypingVisitor, target_node: ast.AST, value_node: ast.A
         else:
             return
     elif varname in annotations:
-        visitor.add_error('Error', f'{varname} variable already defined', node=target_node)
+        visitor.add_error(error.Error, message=f'{varname} variable already defined')
         return
     else:
         try:
@@ -38,7 +39,7 @@ def check_assign(visitor: TypingVisitor, target_node: ast.AST, value_node: ast.A
             if annotation is NoValue:
                 return
         except ValueError as e:
-            visitor.add_error('Error', str(e), node=target_node)
+            visitor.add_error(error.Error, message=str(e))
             return
         annotations[varname] = annotation
 
@@ -46,4 +47,4 @@ def check_assign(visitor: TypingVisitor, target_node: ast.AST, value_node: ast.A
         return
 
     if not annotation.match(value):
-        visitor.add_error('Assignment error', f'Trying to assign value of type {value.type.name} to variable {varname} annotated with {annotation.name}', node=target_node)
+        visitor.add_error(error.AssignmentError, dest=varname, annotation=annotation, type=value.type)

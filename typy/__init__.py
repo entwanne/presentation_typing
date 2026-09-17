@@ -2,6 +2,7 @@ import ast
 import sys
 from pathlib import Path
 
+from . import error
 from .visitor import TypingVisitor
 
 
@@ -26,7 +27,7 @@ class Typy:
                 self.run_file(file)
 
     @property
-    def errors(self) -> list[str]:
+    def errors(self) -> list[error.BaseError]:
         return self.visitor.errors
 
     def print_errors(self) -> None:
