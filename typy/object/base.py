@@ -18,6 +18,10 @@ class TypeForm(PyObject):
     def match(self, value: PyObject) -> bool:
         return value.type <= self
 
+    def __or__(self, rhs: TypeForm) -> TypeForm:
+        from .type import UnionType
+        return UnionType.from_types(self, rhs)
+
     def __le__(self, type: TypeForm) -> bool:
         return NotImplemented
 

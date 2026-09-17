@@ -1,7 +1,7 @@
 import ast
 
 from . import builtins, checker
-from .object import Value, PyObject, NoType, NoValue
+from .object import Value, PyObject, TypeForm, NoType, NoValue
 
 
 class TypingVisitor(ast.NodeVisitor):
@@ -44,6 +44,15 @@ class TypingVisitor(ast.NodeVisitor):
 
     def visit_Constant(self, node: ast.Constant) -> Value:
         return Value(type=getattr(builtins, type(node.value).__name__))
+
+    def visit_BinOp(self, node: ast.BinOp) -> TypeForm:
+        left = self.visit(node.left)
+        right = self.visit(node.right)
+
+        if isinstance(node.op, ast.BitOr) and isinstance(left, TypeForm) and isinstance(right, TypeForm):
+            return left | right
+
+        return NoType
 
     def visit_Name(self, node: ast.Name) -> PyObject:
         if hasattr(builtins, node.id):
