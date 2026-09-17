@@ -6,15 +6,20 @@ from .base import TypeForm
 
 @dataclasses.dataclass(frozen=True)
 class Type(TypeForm):
-    "Concrete type"
+    "Concrete type with bases"
     name: str
+    bases: tuple[TypeForm, ...]
 
     def __le__(self, rhs: TypeForm) -> bool:
+        if self.bases:
+            return any(base <= rhs for base in self.bases)
         if isinstance(rhs, __class__):
             return self.name is rhs.name
         return NotImplemented
 
     def __ge__(self, rhs: TypeForm) -> bool:
+        if self.bases:
+            return any(base >= rhs for base in self.bases)
         if isinstance(rhs, __class__):
             return self.name is rhs.name
         return NotImplemented

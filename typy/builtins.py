@@ -1,5 +1,14 @@
 from .object import Type
 
-int = Type(name='int')
-float = Type(name='float')
-str = Type(name='str')
+int = Type(
+    name='int',
+    bases=(),
+)
+float = Type(
+    name='float',
+    bases=(),
+)
+str = Type(
+    name='str',
+    bases=(),
+)

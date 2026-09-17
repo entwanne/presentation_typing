@@ -4,7 +4,7 @@ import typing
 
 from . import builtins, checker, error
 from .context import Context, Cursor, new_layer
-from .object import Value, Function, PyObject, TypeForm, NoType, NoValue
+from .object import Value, Function, PyObject, Type, TypeForm, NoType, NoValue
 
 
 class TypingVisitor(ast.NodeVisitor):
@@ -96,4 +96,13 @@ class TypingVisitor(ast.NodeVisitor):
             args=tuple(checker.check_type(self, arg.annotation) if arg.annotation else NoType for arg in node.args.args),
             returns=checker.check_type(self, node.returns) if node.returns else NoType,
         )
+        return NoValue
+
+    def visit_ClassDef(self, node: ast.ClassDef) -> NoValue:
+        class_def = Type(
+            name=node.name,
+            bases=tuple(checker.check_type(self, base) for base in node.bases),
+        )
+
+        self.namespace[node.name] = class_def
         return NoValue

@@ -4,7 +4,10 @@ from .type import Type
 
 # Definition of `type` metaclass
 
-base_type = Type(name='type')
+base_type = Type(
+    name='type',
+    bases=(),
+)
 
 # Set it as the type of types
 TypeForm.type = base_type
@@ -12,6 +15,9 @@ TypeForm.type = base_type
 
 # The type of functions, aka types.FunctionType
 
-function_type = Type(name='function')
+function_type = Type(
+    name='function',
+    bases=(),
+)
 
 Callable.type = function_type
