@@ -124,4 +124,25 @@ class TypingVisitor(ast.NodeVisitor):
         )
 
         self.namespace[node.name] = class_def
+        class_context = self.context.new_child()
+        class_namespace = class_context.last.namespace
+
+        with new_layer(self, context=class_context):
+            self.generic_visit(node)
+
+        class_def.methods.update(
+            (name, value)
+            for name, value in class_namespace.items()
+            if isinstance(value, Function)
+        )
+
+        return NoValue
+
+    def visit_Attribute(self, node: ast.Attribute) -> PyObject:
+        obj = self.visit(node.value)
+        if isinstance(obj, PyObject) and isinstance(obj.type, Type):
+            method = checker.get_method(obj, node.attr)
+            if method is not NoValue:
+                return method
+        self.add_error(error.Error, message=f'Unknown attribute {node.attr} on object of type {obj.type.name}')
         return NoValue
