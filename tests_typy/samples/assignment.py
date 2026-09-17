@@ -1,5 +1,13 @@
 a: int = 0 # OK
-b: int = "5" # KO
+a = 5 # OK
+a = "5" # KO
 
-b: str = "" # OK
-c: str = 0 # KO
+b: str
+b = "" # OK
+b = 0 # KO
+
+b: str = "" # KO
+
+c: int = 12 # OK
+
+d: str = 12 # KO

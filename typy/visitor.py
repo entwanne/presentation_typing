@@ -1,7 +1,7 @@
 import ast
 
-from . import builtins
-from .object import Value, PyObject, Type, NoType, NoValue
+from . import builtins, checker
+from .object import Value, PyObject, NoType, NoValue
 
 
 class TypingVisitor(ast.NodeVisitor):
@@ -9,6 +9,7 @@ class TypingVisitor(ast.NodeVisitor):
 
     def __init__(self):
         self.filename = None
+        self.annotations = {}
         self.errors = []
 
     def add_error(self, title: str, error: str, node=None) -> None:
@@ -24,6 +25,7 @@ class TypingVisitor(ast.NodeVisitor):
 
     def visit_file(self, node: ast.AST, filename: str) -> PyObject:
         self.filename = filename
+        self.annotations.clear()
         return self.visit(node)
 
     def visit(self, node: ast.AST) -> PyObject:
@@ -49,20 +51,11 @@ class TypingVisitor(ast.NodeVisitor):
         self.add_error('Error', f'{node.id} type not found', node=node)
         return NoType
 
+    def visit_Assign(self, node: ast.Assign) -> NoValue:
+        for target in node.targets:
+            checker.check_assign(self, target, node.value)
+        return NoValue
+
     def visit_AnnAssign(self, node: ast.AnnAssign) -> NoValue:
-        if node.value is None:
-            return
-
-        value = self.visit(node.value)
-        if value is NoValue:
-            return NoValue
-
-        annotation = self.visit(node.annotation)
-        if not isinstance(annotation, Type):
-            self.add_error('Error', f'{annotation!r} is not a type', node=node.annotation)
-            return NoValue
-
-        if not annotation.match(value):
-            self.add_error('Assignment error', f'Trying to assign value of type {value.type.name} to variable {node.target.id} annotated with {annotation.name}', node=node.target)
-
+        checker.check_assign(self, node.target, node.value, node.annotation)
         return NoValue
