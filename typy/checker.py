@@ -1,16 +1,16 @@
 import ast
 import typing
 
-from .object import Type, NoValue
+from .object import TypeForm, NoValue
 
 if typing.TYPE_CHECKING:
     from .visitor import TypingVisitor
 
 
-def check_type(visitor: TypingVisitor, node: ast.AST) -> Type:
+def check_type(visitor: TypingVisitor, node: ast.AST) -> TypeForm:
     'Helper function to ensure that a node contains a type'
     type = visitor.visit(node)
-    if isinstance(type, Type):
+    if isinstance(type, TypeForm):
         return type
     visitor.add_error('Error', f'{type!r} is not a type', node=node)
     return NoValue

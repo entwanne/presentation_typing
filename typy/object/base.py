@@ -1,22 +1,25 @@
 import dataclasses
 import typing
 
+if typing.TYPE_CHECKING:
+    from .type import Type
 
-# Bases
 
 class PyObject:
     "Any Python object, instance of object"
-    type: Type
+    type: TypeForm
 
 
-@dataclasses.dataclass(frozen=True)
-class Type(PyObject):
+class TypeForm(PyObject):
     "Any object representing a type or a type expression, can be used as an annotation"
     name: str
     type: typing.ClassVar[Type]
 
     def match(self, value: PyObject) -> bool:
-        return value.type is self
+        return value.type <= self
+
+    def __le__(self, type: TypeForm) -> bool:
+        return NotImplemented
 
     def __str__(self) -> str:
         return f'<Type:{self.name}>'
@@ -25,13 +28,8 @@ class Type(PyObject):
 @dataclasses.dataclass(frozen=True)
 class Value(PyObject):
     "A concrete value with a type"
-    type: Type
+    type: TypeForm
 
 
-# Definition of `type` metaclass
-base_type = Type(name='type')
-# Set it as the type of types
-Type.type = base_type
-
-NoType = Type('NoType')
-NoValue = Value(type=NoType)
+from . import definitions
+del definitions
