@@ -14,6 +14,7 @@ class ApplicationFunction(Function):
 @dataclasses.dataclass(frozen=True)
 class DynamicFunction(Callable):
     "Kind of function with dynamic properties to evaluate args & return annotations and function application"
+    # name: str
     dynamic: collections.abc.Callable[[PyObject | None], Callable]
 
     @property

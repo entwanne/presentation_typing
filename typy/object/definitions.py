@@ -28,7 +28,7 @@ base_type.methods['__call__'] = DynamicFunction(
 )
 
 # Set it as the type of types
-TypeForm.type = base_type
+TypeForm.type = base_type # should be Type.type, UnionType would have its own
 
 
 # The type of functions, aka types.FunctionType

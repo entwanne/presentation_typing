@@ -8,6 +8,8 @@ if typing.TYPE_CHECKING:
     from .visitor import TypingVisitor
 
 
+# + override typing module in import mechanism to point to a custom one? (defining Any and other stuff)
+
 operators = {
     ast.BitOr: '__or__',
     ast.Add: '__add__',
