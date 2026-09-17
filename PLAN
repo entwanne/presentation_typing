@@ -17,7 +17,7 @@
 
 # Typage statique
 
-- Utiliser les annotations de types 
+- Utiliser les annotations de types
 - mypy, ty, pyright
 - Module typing
     - Any
@@ -45,3 +45,21 @@
     - Couverture des branches, gestion des (in)compatibilités
     - Ensembles de types permis pour une variable, unions et intersections de types
 - Inférence de type
+
+# Digressions
+
+- Modèle objet de Python : isinstance(object, type) and issubclass(type, object), isinstance(type, type)
+- Gestion des méthodes
+    ```pycon
+    >>> class X:
+    ...     def func(self):
+    ...         pass
+    ...
+    >>> x = X()
+    >>> x.func.__self__ is x
+    True
+    >>> x.func.__func__ is X.func
+    True
+    ```
+    - cas des méthodes builtins (`str.upper`) qui peuvent avoir un fonctionnement différent (pas de `__func__`)
+    - pas besoin d'entrer dans les détails (`__get__`), juste parler de descripteur
