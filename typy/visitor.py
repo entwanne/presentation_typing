@@ -1,5 +1,11 @@
 import ast
 import builtins
+import dataclasses
+
+
+@dataclasses.dataclass(frozen=True)
+class Value:
+    type: type
 
 
 class TypingVisitor(ast.NodeVisitor):
@@ -26,8 +32,8 @@ class TypingVisitor(ast.NodeVisitor):
 
     # Node visit methods
 
-    def visit_Constant(self, node) -> object:
-        return node.value
+    def visit_Constant(self, node) -> Value:
+        return Value(type=type(node.value))
 
     def visit_Name(self, node) -> type | None:
         if hasattr(builtins, node.id):
@@ -39,11 +45,13 @@ class TypingVisitor(ast.NodeVisitor):
             return
 
         value = self.visit(node.value)
+        if not isinstance(value, Value):
+            return
 
         annotation = self.visit(node.annotation)
         if not isinstance(annotation, type):
             self.add_error('Error', f'{annotation!r} is not a type', node=annotation.node)
             return
 
-        if not isinstance(value, annotation):
-            self.add_error('Assignment error', f'Trying to assign value of type {type(value).__name__} to variable {node.target.id} annotated with {annotation.__name__}', node=node.target)
+        if value.type is not annotation:
+            self.add_error('Assignment error', f'Trying to assign value of type {value.type.__name__} to variable {node.target.id} annotated with {annotation.__name__}', node=node.target)
