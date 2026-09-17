@@ -1,10 +1,4 @@
-from typy import Typy
-
-
-def test_assignment():
-    sample = 'tests_typy/samples/assignment.py'
-    typy = Typy()
-
+def test_assignment(typy, sample):
     typy.run_path(sample)
     assert [str(e) for e in typy.errors] == [
         f'Assignment error on {sample}::3: Trying to assign value of type str to variable a annotated with int',
