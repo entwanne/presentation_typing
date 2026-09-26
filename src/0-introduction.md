@@ -8,4 +8,9 @@
 
 ```python skip
 %load_ext ipython_reopenclass
+
+from IPython.display import Video
+
+def karaoke():
+    return Video("img/karaoke.webm", width=800)
 ```

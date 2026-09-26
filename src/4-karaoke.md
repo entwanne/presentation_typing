@@ -2,4 +2,6 @@
 
 ## T'as typé ton Python
 
-- Karaoké
+```python
+karaoke()
+```
