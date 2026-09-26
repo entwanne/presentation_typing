@@ -13,4 +13,7 @@ from IPython.display import Video
 
 def karaoke():
     return Video("img/karaoke.webm", width=800)
+
+import pathlib
+pathlib.Path('assets').mkdir(exist_ok=True)
 ```

@@ -2,3 +2,5 @@
 *.pyc
 /env
 /.ipynb_checkpoints
+/assets/
+/*.ipynb
