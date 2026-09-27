@@ -126,7 +126,10 @@ class Typy:
 ## Analyse statique
 
 ```python
-typy = Typy()
-typy.run_path('assets/assignment.py')
-typy.print_errors()
+def check_files(*paths):
+    typy = Typy()
+    typy.run_path(*paths)
+    typy.print_errors()
+
+check_files('assets/assignment.py')
 ```

@@ -158,7 +158,5 @@ class TypingVisitor(...):
 ## Modèle objet de Python
 
 ```python
-typy = Typy()
-typy.run_path('assets/assignment.py')
-typy.print_errors()
+check_files('assets/assignment.py')
 ```
