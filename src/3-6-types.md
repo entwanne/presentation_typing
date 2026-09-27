@@ -4,7 +4,7 @@
 - Définition de classes
 - Appel de méthodes
 - Définition de méthodes
-- Opérateurs (6d3c775)
+- Opérateurs
 
 ## Appeler les types
 
@@ -280,4 +280,213 @@ a.tutu() # KO
 
 ```python
 check_files('assets/methods.py')
+```
+
+## Opérateurs en tant que méthodes
+
+```python
+builtins = {
+    'int': Type(name='int'),
+    'float': Type(name='float'),
+    'str': Type(name='str'),
+}
+
+builtins['int'].methods['__init__'] = Function(
+    name='__init__',
+    args=(builtins['int'], builtins['int'] | builtins['float'] | builtins['str']),
+    returns=builtins['int'],
+)
+builtins['int'].methods['__add__'] = Function(
+    name='__add__',
+    args=(builtins['int'], builtins['int']),
+    returns=builtins['int'],
+)
+
+builtins['float'].methods['__init__'] = Function(
+    name='__init__',
+    args=(builtins['float'], builtins['int'] | builtins['float'] | builtins['str']),
+    returns=builtins['float'],
+)
+builtins['float'].methods['__add__'] = Function(
+    name='__add__',
+    args=(builtins['float'], builtins['float'] | builtins['int']),
+    returns=builtins['float'],
+)
+
+builtins['str'].methods['__init__'] = Function(
+    name='__init__',
+    args=(builtins['str'], builtins['str'] | builtins['int'] | builtins['float']),
+    returns=builtins['str'],
+)
+builtins['str'].methods['__add__'] = Function(
+    name='__add__',
+    args=(builtins['str'], builtins['str']),
+    returns=builtins['str'],
+)
+```
+
+## Opérateurs en tant que méthodes
+
+```python
+import collections.abc
+
+@dataclasses.dataclass(frozen=True)
+class ApplicationFunction(Function):
+    apply: collections.abc.Callable
+```
+
+## Opérateurs en tant que méthodes
+
+```python
+@dataclasses.dataclass(frozen=True)
+class DynamicFunction(Callable):
+    dynamic: collections.abc.Callable[[PyObject | None], Callable]
+
+    @property
+    def name(self):
+        return self.dynamic(None).name
+
+    @property
+    def args(self) -> tuple[TypeForm, ...]:
+        return self.dynamic(None).args
+
+    @property
+    def returns(self) -> TypeForm:
+        return self.dynamic(None).returns
+
+    def apply(self, *args: PyObject) -> PyObject:
+        return self.dynamic(None).apply(*args)
+
+    def bind(self, value: PyObject) -> DynamicMethod:
+        return DynamicMethod(function=self, value=value)
+```
+
+## Opérateurs en tant que méthodes
+
+```python
+class DynamicMethod(Method):
+    function: DynamicFunction
+
+    @property
+    def args(self) -> tuple[TypeForm, ...]:
+        return self.function.dynamic(self.value).args
+
+    @property
+    def returns(self) -> TypeForm:
+        return self.function.dynamic(self.value).returns
+```
+
+## Opérateurs en tant que méthodes
+
+```python
+base_type = Type(name='type')
+TypeForm.type = base_type
+
+base_type.methods['__or__'] = DynamicFunction(
+    lambda cls: ApplicationFunction(
+        name='__or__',
+        args=(base_type, base_type) if cls is None else (base_type,),
+        returns=base_type,
+        apply=lambda cls, rhs: UnionType(types=(cls, rhs)),
+    ),
+)
+base_type.methods['__call__'] = DynamicFunction(
+    lambda cls: ApplicationFunction(
+        name='__call__',
+        args=() if cls is None else cls.methods['__init__'].args[1:] if '__init__' in cls.methods else (),
+        returns=cls,
+        apply=lambda cls, *args: Value(type=cls),
+    ),
+)
+```
+
+## Opérateurs en tant que méthodes
+
+```python
+function_type = Type(name='function')
+Callable.type = function_type
+
+function_type.methods['__call__'] = DynamicFunction(
+    lambda func: ApplicationFunction(
+        name='__call__',
+        args=() if func is None else func.args,
+        returns=None if func is None else func.returns,
+    ),
+)
+```
+
+## Opérateurs en tant que méthodes
+
+```python
+operators = {
+    ast.BitOr: '__or__',
+    ast.Add: '__add__',
+    ast.Call: '__call__',
+}
+```
+
+## Opérateurs en tant que méthodes
+
+```python
+def check_operation(visitor, operator, args, error_args):
+    if not args or any(arg is NoValue for arg in args):
+        return NoValue
+
+    method_name = operators.get(operator)
+    if method_name is None:
+        visitor.add_error(**error_args)
+        return NoValue
+
+    value, args = args[0], args[1:]
+    method = get_method(value, method_name)
+    if method is NoValue:
+        visitor.add_error(**error_args)
+        return NoValue
+
+    if method.match_args(*args):
+        return method.apply(*args)
+
+    visitor.add_error(**error_args)
+    return NoValue
+```
+
+## Opérateurs en tant que méthodes
+
+```python
+class TypingVisitor(...):
+    [...]
+
+    def visit_BinOp(self, node):
+        left = self.visit(node.left)
+        right = self.visit(node.right)
+        return check_operation(
+            self,
+            type(node.op),
+            (left, right),
+            error_args={
+                'error_type': ExpressionError,
+                'operation': type(node.op).__name__,
+                'values': (left, right),
+            }
+        )
+
+    def visit_Call(self, node):
+        func = self.visit(node.func)
+        args = tuple(self.visit(arg) for arg in node.args)
+        return check_operation(
+            self,
+            ast.Call,
+            (func, *args),
+            error_args={
+                'error_type': CallError,
+                'function': func.name if isinstance(func, Callable) else '',
+                'args': args,
+            }
+        )
+```
+
+## Opérateurs en tant que méthodes
+
+```python
+check_files(*Path('assets').glob('*.py'))
 ```
