@@ -144,17 +144,9 @@ class Type(TypeForm):
         return NotImplemented
 ```
 
-## Expressions de types
-
 ```python
-base_type = Type(name='type')
+[...]
 TypeForm.type = base_type
-
-builtins = {
-    'int': Type(name='int'),
-    'float': Type(name='float'),
-    'str': Type(name='str'),
-}
 ```
 
 ## Expressions de types
@@ -188,7 +180,10 @@ class _NoValue(PyObject):
 
     def __repr__(self):
         return '<NoValue>'
+```
 
+```python
+[...]
 NoType = _NoType()
 NoValue = _NoValue()
 ```
@@ -235,6 +230,7 @@ class UnionType(TypeForm):
 ## Union de types
 
 ```python
+[...]
 TypeForm.__or__ = lambda self, rhs: UnionType.from_types(self, rhs)
 ```
 

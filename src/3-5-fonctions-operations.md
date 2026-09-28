@@ -30,6 +30,7 @@ class Function(Callable):
 ## Définition de fonction
 
 ```python
+[...]
 function_type = Type(name='function')
 Callable.type = function_type
 ```

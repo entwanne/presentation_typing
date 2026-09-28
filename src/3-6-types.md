@@ -80,22 +80,6 @@ class TypingVisitor(...):
 ## Définition de classe
 
 ```python
-base_type = Type(name='type')
-TypeForm.type = base_type
-
-builtins = {
-    'int': Type(name='int'),
-    'float': Type(name='float'),
-    'str': Type(name='str'),
-}
-
-function_type = Type(name='function')
-Callable.type = function_type
-```
-
-## Définition de classe
-
-```python
 %%writefile assets/classes.py
 class A:
     pass
@@ -285,12 +269,7 @@ check_files('assets/methods.py')
 ## Opérateurs en tant que méthodes
 
 ```python
-builtins = {
-    'int': Type(name='int'),
-    'float': Type(name='float'),
-    'str': Type(name='str'),
-}
-
+[...]
 builtins['int'].methods['__init__'] = Function(
     name='__init__',
     args=(builtins['int'], builtins['int'] | builtins['float'] | builtins['str']),
@@ -379,9 +358,7 @@ class DynamicMethod(Method):
 ## Opérateurs en tant que méthodes
 
 ```python
-base_type = Type(name='type')
-TypeForm.type = base_type
-
+[...]
 base_type.methods['__or__'] = DynamicFunction(
     lambda cls: ApplicationFunction(
         name='__or__',
@@ -403,9 +380,7 @@ base_type.methods['__call__'] = DynamicFunction(
 ## Opérateurs en tant que méthodes
 
 ```python
-function_type = Type(name='function')
-Callable.type = function_type
-
+[...]
 function_type.methods['__call__'] = DynamicFunction(
     lambda func: ApplicationFunction(
         name='__call__',

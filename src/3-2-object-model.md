@@ -86,16 +86,19 @@ class Value(PyObject):
 ## Modèle objet de Python
 
 ```python
+[...]
 base_type = Type(name='type')
 Type.type = base_type
 ```
 
 ```python
+[...]
 NoType = Type('NoType')
 NoValue = Value(type=NoType)
 ```
 
 ```python
+[...]
 builtins = {
     'int': Type(name='int'),
     'float': Type(name='float'),
