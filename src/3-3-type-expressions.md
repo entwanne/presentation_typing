@@ -230,8 +230,15 @@ class UnionType(TypeForm):
 ## Union de types
 
 ```python
-[...]
-TypeForm.__or__ = lambda self, rhs: UnionType.from_types(self, rhs)
+class TypeForm(...):
+    [...]
+
+    def __or__(self, rhs):
+        return UnionType.from_types(self, rhs)
+
+@dataclasses.dataclass(frozen=True)
+class Type(...):
+    [...]
 ```
 
 ```python
