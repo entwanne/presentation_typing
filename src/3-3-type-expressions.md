@@ -256,7 +256,7 @@ class UnionType(...):
 class TypingVisitor(...):
     [...]
 
-    def visit_BinOp(self, node: ast.BinOp) -> TypeForm:
+    def visit_BinOp(self, node) -> TypeForm:
         left = self.visit(node.left)
         right = self.visit(node.right)
 

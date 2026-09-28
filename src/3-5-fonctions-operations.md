@@ -53,30 +53,15 @@ class TypingVisitor(...):
 ## Appel de fonction
 
 ```python
-def check_call(visitor, func, args):
+def check_call(visitor, func, args, node):
     if any(arg is NoValue for arg in args):
         return NoValue
 
     if isinstance(func, Callable) and func.match_args(*args):
         return func.apply(*args)
 
-    visitor.add_error(CallError, function=getattr(func, 'name', ''), args=args)
+    visitor.add_error('Call Error', f'cannot call {func.name} with arg types {", ".join(arg.type.name for arg in args)}', node=node)
     return NoValue
-```
-
-## Appel de fonction
-
-```python
-@dataclasses.dataclass(frozen=True)
-class CallError(BaseError):
-    function: str
-    args: tuple
-
-    title: typing.ClassVar[str] = 'Call error'
-
-    @property
-    def message(self) -> str:
-        return f'cannot call {self.function} with arg types {", ".join(arg.type.name for arg in self.args)}'
 ```
 
 ## Appel de fonction
@@ -88,7 +73,7 @@ class TypingVisitor(...):
     def visit_Call(self, node: ast.Call) -> PyObject:
         func = self.visit(node.func)
         args = tuple(self.visit(arg) for arg in node.args)
-        return check_call(self, func, args)
+        return check_call(self, func, args, node)
 ```
 
 ## Appel de fonction
@@ -116,7 +101,7 @@ check_files('assets/functions.py')
 ## Opérateurs binaires
 
 ```python
-def check_operation(visitor, operator, left, right):
+def check_operation(visitor, operator, left, right, node):
     if left is NoValue or right is NoValue:
         return NoValue
 
@@ -132,7 +117,7 @@ def check_operation(visitor, operator, left, right):
     if operator is ast.Add and left.type is builtins['float'] and right.type in (builtins['float'], builtins['int']):
         return Value(type=builtins['float'])
 
-    visitor.add_error(ExpressionError, operation=operator.__name__, values=(left, right))
+    visitor.add_error('Expression error', f'Incompatible operation {operator.__name__} for values of types {left.type.name} and {right.type.name}', node=node)
     return NoValue
 ```
 
@@ -145,7 +130,7 @@ class TypingVisitor(...):
     def visit_BinOp(self, node):
         left = self.visit(node.left)
         right = self.visit(node.right)
-        return check_operation(self, type(node.op), left, right)
+        return check_operation(self, type(node.op), left, right, node)
 ```
 
 ## Opérateurs binaires

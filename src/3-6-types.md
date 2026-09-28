@@ -9,7 +9,7 @@
 ## Appeler les types
 
 ```python
-def check_call(visitor, func, args):
+def check_call(visitor, func, args, node):
     if any(arg is NoValue for arg in args):
         return NoValue
 
@@ -19,7 +19,7 @@ def check_call(visitor, func, args):
     if isinstance(func, TypeForm):
         return Value(type=func)
 
-    visitor.add_error(CallError, function=getattr(func, 'name', ''), args=args)
+    visitor.add_error('Call Error', f'cannot call {getattr(func, 'name', '')} with arg types {", ".join(arg.type.name for arg in args)}', node=node)
     return NoValue
 ```
 
@@ -212,7 +212,7 @@ def get_method(value, method_name):
 ## Méthodes
 
 ```python
-def check_call(visitor, func, args):
+def check_call(visitor, func, args, node):
     if any(arg is NoValue for arg in args):
         return NoValue
 
@@ -222,7 +222,7 @@ def check_call(visitor, func, args):
     if isinstance(func, TypeForm):
         return Value(type=func)
 
-    visitor.add_error(CallError, function=getattr(func, 'name', ''), args=args)
+    visitor.add_error('Call Error', f'cannot call {getattr(func, 'name', '')} with arg types {", ".join(arg.type.name for arg in args)}', node=node)
     return NoValue
 ```
 
@@ -238,7 +238,7 @@ class TypingVisitor(...):
             method = get_method(obj, node.attr)
             if method is not NoValue:
                 return method
-        self.add_error(Error, message=f'Unknown attribute {node.attr} on object of type {obj.type.name}')
+        self.add_error('Error', f'Unknown attribute {node.attr} on object of type {obj.type.name}', node=node)
         return NoValue
 ```
 
@@ -411,19 +411,19 @@ def check_operation(visitor, operator, args, error_args):
 
     method_name = operators.get(operator)
     if method_name is None:
-        visitor.add_error(**error_args)
+        visitor.add_error(*error_args)
         return NoValue
 
     value, args = args[0], args[1:]
     method = get_method(value, method_name)
     if method is NoValue:
-        visitor.add_error(**error_args)
+        visitor.add_error(*error_args)
         return NoValue
 
     if method.match_args(*args):
         return method.apply(*args)
 
-    visitor.add_error(**error_args)
+    visitor.add_error(*error_args)
     return NoValue
 ```
 
@@ -440,11 +440,11 @@ class TypingVisitor(...):
             self,
             type(node.op),
             (left, right),
-            error_args={
-                'error_type': ExpressionError,
-                'operation': type(node.op).__name__,
-                'values': (left, right),
-            }
+            error_args=(
+                'Expression Error',
+                f'Incompatible operation {type(node.op).__name__} for values of types {left.type.name} and {right.type.name}',
+                node,
+            ),
         )
 
     def visit_Call(self, node):
@@ -454,11 +454,11 @@ class TypingVisitor(...):
             self,
             ast.Call,
             (func, *args),
-            error_args={
-                'error_type': CallError,
-                'function': func.name if isinstance(func, Callable) else '',
-                'args': args,
-            }
+            error_args=(
+                'Call Error',
+                f'cannot call {getattr(func, 'name', '')} with arg types {", ".join(arg.type.name for arg in args)}',
+                node,
+            ),
         )
 ```
 
