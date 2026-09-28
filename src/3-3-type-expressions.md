@@ -235,10 +235,6 @@ class TypeForm(...):
 
     def __or__(self, rhs):
         return UnionType.from_types(self, rhs)
-
-@dataclasses.dataclass(frozen=True)
-class Type(...):
-    [...]
 ```
 
 ```python

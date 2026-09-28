@@ -143,16 +143,6 @@ class Callable(...):
 
     def bind(self, value):
         return Method(function=self, value=value)
-
-@dataclasses.dataclass(frozen=True)
-class Function(...):
-    [...]
-
-@dataclasses.dataclass(frozen=True)
-class Method(...):
-    [...]
-# Avoid this by reopening subclasses automatically + reapply decorator
-# + allow some blocks to be reexecuted after a class has been modified?
 ```
 
 ## Méthodes
