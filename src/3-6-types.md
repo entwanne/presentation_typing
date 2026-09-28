@@ -170,6 +170,8 @@ class Type(...):
 ## Méthodes
 
 ```python
+from collections import ChainMap
+
 class TypingVisitor(...):
     [...]
 
@@ -180,15 +182,15 @@ class TypingVisitor(...):
         )
 
         self.namespace[node.name] = class_def
-        class_context = self.context.new_child()
-        class_namespace = class_context.last.namespace
+        current_ns, current_ann, class_ns = self.namespace, self.annotations, {}
 
-        with new_layer(self, context=class_context):
-            self.generic_visit(node)
+        self.namespace, self.annotations = ChainMap(current_ns, class_ns), ChainMap(current_ann, {})
+        self.generic_visit(node)
+        self.namespace, self.annotations = current_ns, current_ann
 
         class_def.methods.update(
             (name, value)
-            for name, value in class_namespace.items()
+            for name, value in class_ns.items()
             if isinstance(value, Function)
         )
 

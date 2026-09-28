@@ -124,7 +124,7 @@ def check_type(visitor, node):
     type = visitor.visit(node)
     if isinstance(type, TypeForm):
         return type
-    visitor.add_error(Error, f'{type!r} is not a type', node=node)
+    visitor.add_error(Error, message=f'{type!r} is not a type')
     return NoValue
 ```
 
@@ -172,101 +172,20 @@ check_files('assets/assignment.py')
 ## Contexte
 
 ```python
-from collections import ChainMap
-
-@dataclasses.dataclass(frozen=True)
-class Context:
-    filename: str
-    namespace: ChainMap = dataclasses.field(default_factory=ChainMap)
-    annotations: ChainMap = dataclasses.field(default_factory=ChainMap)
-
-    def new_child(self):
-        return dataclasses.replace(
-            self,
-            namespace=self.namespace.new_child(),
-            annotations=self.annotations.new_child(),
-        )
-
-    @property
-    def parents(self):
-        return dataclasses.replace(
-            self,
-            namespace=self.namespace.parents,
-            annotations=self.annotations.parents,
-        )
-
-    @property
-    def last(self):
-        return dataclasses.replace(
-            self,
-            namespace=ChainMap(self.namespace.maps[0]),
-            annotations=ChainMap(self.annotations.maps[0]),
-        )
-```
-
-## Contexte
-
-```python
-from contextlib import contextmanager
-
-@contextmanager
-def new_layer(obj, **kwargs):
-    old = {key: getattr(obj, key) for key in kwargs}
-    try:
-        for key, value in kwargs.items():
-            setattr(obj, key, value)
-        yield
-    finally:
-        for key, value in old.items():
-            setattr(obj, key, value)
-```
-
-## Contexte
-
-```python
-class TypingVisitor(...):
-    [...]
-
-    def __init__(self):
-        self.contexts = {}
-        self.context = None
-        self.cursor = Cursor()
-        self.errors = []
-
-    @property
-    def annotations(self):
-        return self.context.annotations
-
-    def visit_file(self, tree, filename):
-        self.contexts[filename] = Context(filename=filename)
-        with new_layer(
-                self,
-                context=self.contexts[filename],
-                cursor=self.cursor.replace(filename=filename),
-        ):
-            return self.visit(tree)
-```
-
-## Contexte
-
-```python
 class TypingVisitor(...):
     [...]
 
     def visit(self, node):
         assert node is not None
 
-        with new_layer(
-                self,
-                cursor=self.cursor.replace(
-                    line=getattr(node, 'lineno', None),
-                    col=getattr(node, 'col_offset', None),
-                ),
-        ):
-            value = super().visit(node)
-            if not isinstance(value, PyObject):
-                raise ValueError(f'Visit call returned a value of type {type(value).__qualname__} for node {type(node).__qualname__} which is not a PyObject')
-            return value
+        self.cursor = self.cursor.replace(
+            line=getattr(node, 'lineno', None),
+            col=getattr(node, 'col_offset', None),
+        )
+        value = super().visit(node)
+        if not isinstance(value, PyObject):
+            raise ValueError(f'Visit call returned a value of type {type(value).__qualname__} for node {type(node).__qualname__} which is not a PyObject')
+        return value
 ```
 
 ## Contexte
@@ -281,16 +200,24 @@ check_files('assets/assignment.py')
 class TypingVisitor(...):
     [...]
 
-    @property
-    def namespace(self):
-        return self.context.namespace
+    def __init__(self):
+        self.annotations = {}
+        self.namespace = {}
+        self.cursor = Cursor()
+        self.errors = []
+
+    def visit_file(self, node, filename):
+        self.cursor = self.cursor.replace(filename=filename)
+        self.annotations.clear()
+        self.namespace.clear()
+        return self.visit(node)
 
     def visit_Name(self, node: ast.Name) -> PyObject:
         if node.id in self.namespace:
             return self.namespace[node.id]
         if node.id in builtins:
             return builtins[node.id]
-        self.add_error(error.Error, message=f'{node.id} variable not found')
+        self.add_error(Error, message=f'{node.id} variable not found')
         return NoValue
 ```
 
