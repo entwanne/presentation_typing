@@ -162,6 +162,10 @@ class TypingVisitor(...):
 
 ## Modèle objet de Python
 
+```sh
+%load assets/assignment.py
+```
+
 ```python
 check_files('assets/assignment.py')
 ```

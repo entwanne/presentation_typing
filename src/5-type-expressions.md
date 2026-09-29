@@ -203,6 +203,10 @@ def check_type(visitor, node):
 
 ## Expressions de types
 
+```sh
+%load assets/assignment.py
+```
+
 ```python
 check_files('assets/assignment.py')
 ```
@@ -290,6 +294,7 @@ c: int = 12 # OK
 d: str = 12 # KO
 
 e: int | float = 0 # OK
+e = 0.5 # OK
 f: int | float = 0.1 # OK
 g: int | float = '' # KO
 ```

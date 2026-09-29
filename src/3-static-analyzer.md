@@ -130,6 +130,12 @@ def check_files(*paths):
     typy = Typy()
     typy.run_path(*paths)
     typy.print_errors()
+```
 
+```sh
+%load assets/assignment.py
+```
+
+```python
 check_files('assets/assignment.py')
 ```

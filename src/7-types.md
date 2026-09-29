@@ -456,6 +456,10 @@ class TypingVisitor(...):
 
 ## Opérateurs en tant que méthodes
 
+```sh
+%load assets/operations.py
+```
+
 ```python
 check_files('assets/operations.py')
 ```

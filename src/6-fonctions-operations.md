@@ -71,6 +71,10 @@ def check_assign(visitor, target_node, value_node, annotation_node=None):
 
 ## Espaces de noms
 
+```sh
+%load assets/assignment.py
+```
+
 ```python
 check_files('assets/assignment.py')
 ```
