@@ -1,3 +1,5 @@
+# Types
+
 ## Types
 
 - Les types comme des fonctions
@@ -455,5 +457,5 @@ class TypingVisitor(...):
 ## Opérateurs en tant que méthodes
 
 ```python
-check_files(*Path('assets').glob('*.py'))
+check_files('assets/operations.py')
 ```
