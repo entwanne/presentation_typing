@@ -176,7 +176,7 @@ class TypingVisitor(...):
         self.namespace[node.name] = class_def
         current_ns, current_ann, class_ns = self.namespace, self.annotations, {}
 
-        self.namespace, self.annotations = ChainMap(current_ns, class_ns), ChainMap(current_ann, {})
+        self.namespace, self.annotations = ChainMap(class_ns, current_ns), ChainMap({}, current_ann)
         self.generic_visit(node)
         self.namespace, self.annotations = current_ns, current_ann
 
