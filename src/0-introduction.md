@@ -14,6 +14,10 @@ from IPython.display import Video
 def karaoke():
     return Video("img/karaoke.webm", width=800)
 
-import pathlib
-pathlib.Path('assets').mkdir(exist_ok=True)
+import pathlib, shutil
+shutil.rmtree('assets', ignore_errors=True)
+pathlib.Path('assets').mkdir()
+pathlib.Path('test_mypy.py').unlink(missing_ok=True)
+
+%alias mypy ./env/bin/mypy
 ```

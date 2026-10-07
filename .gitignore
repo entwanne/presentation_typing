@@ -5,3 +5,4 @@
 /assets/
 /*.ipynb
 /run.py
+/test_mypy.py

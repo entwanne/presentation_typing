@@ -27,7 +27,7 @@ This will always be an empty file in IPython
     background-size: contain;
 }
 
-#notebook .text_cell * {
+#notebook .text_cell p, #notebook .text_cell li, #notebook .text_cell a, #notebook .text_cell code {
     color: #000a29;
 }
 
