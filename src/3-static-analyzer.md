@@ -1,21 +1,81 @@
 # Écrire un analyseur de types
 
-## Analyse statique
+## Arbre syntaxique (AST)
 
-- Module `ast`, `ast.parse` et `NodeVisitor`
-    - méthodes `visit_XXX`
+- Accéder aux annotations sans exécuter le code
+    - Module `ast` pour parser un fichier Python
 
-## Analyse statique
+---
+
+```python
+%%writefile samples/test_ast.py
+def func(a: int) -> int:
+    return a + 1
+
+print(func(5))
+```
 
 ```python
 import ast
+from pathlib import Path
 
+content = Path('samples/test_ast.py').read_text()
+tree = ast.parse(content)
+print(ast.dump(tree))
+```
+
+## Arbre syntaxique (AST)
+
+- Visiteur (_visitor pattern_) pour parcourir les nœuds
+
+```python
+class PrintVisitor(ast.NodeVisitor):
+    def visit(self, node):
+        print(type(node))
+        return super().visit(node)
+
+PrintVisitor().visit(tree)
+```
+
+## Arbre syntaxique (AST)
+
+- Peut être spécialisé par type de nœud
+
+```python
+class PrintVisitor(ast.NodeVisitor):
+    def visit_FunctionDef(self, node):
+        print('Defining', node.name)
+        return self.generic_visit(node) # parcours récursif
+
+    def visit_Call(self, node):
+        print('Calling', node.func.id)
+        return self.generic_visit(node)
+
+PrintVisitor().visit(tree)
+```
+
+- Tous les types de nœuds documentés sur [docs.python.org/fr/3/library/ast.html](https://docs.python.org/fr/3/library/ast.html)
+
+## Analyseur de types
+
+- Construction d'un visiteur pour contrôler les types
+    - Commencer par analyser les assignations
+    - Nœuds `AnnAssign`, `Name` et `Constant`
+
+---
+
+- `Constant` : la valeur Python littérale qui est assignée
+
+```python
 class TypingVisitor(ast.NodeVisitor):
     def visit_Constant(self, node) -> object:
         return node.value
 ```
 
-## Analyse statique
+## Analyseur de types
+
+- `Name` : le nom du type utilisé comme annotation
+- Première ébauche de gestion d'erreur
 
 ```python
 import builtins
@@ -32,7 +92,9 @@ class TypingVisitor(...):
         self.add_error('Error', f'{node.id} type not found', node=node)
 ```
 
-## Analyse statique
+## Analyseur de types
+
+- `AnnAssign` : l'assignation annotée en tant que telle
 
 ```python
 class TypingVisitor(...):
@@ -53,7 +115,9 @@ class TypingVisitor(...):
             self.add_error('Assignment error', f'Trying to assign value of type {type(value).__name__} to variable {node.target.id} annotated with {annotation.__name__}', node=node.target)
 ```
 
-## Analyse statique
+## Analyseur de types
+
+- Exécution sur un fichier de test
 
 ```python
 %%writefile assets/assignment.py
@@ -64,12 +128,14 @@ c: str = 0 # KO
 ```
 
 ```python
-from pathlib import Path
 visitor = TypingVisitor()
 visitor.visit(ast.parse(Path('assets/assignment.py').read_text()))
 ```
 
-## Analyse statique
+## Contexte d'analyse
+
+- Gestion du contexte : nom de fichier et numéro de ligne
+- Meilleur traitement des erreurs : stockage plutôt qu'affichage
 
 ```python
 class TypingVisitor(...):
@@ -93,7 +159,10 @@ class TypingVisitor(...):
         self.errors.append(''.join(parts))
 ```
 
-## Analyse statique
+## Point d'entrée
+
+- Construction d'une classe `Typy` pour aider au traitement des fichiers
+- Point d'entrée de notre analyseur statique de types
 
 ```python
 class Typy:
@@ -113,6 +182,15 @@ class Typy:
         for path in paths:
             with open(path) as file:
                 self.run_file(file)
+```
+
+## Point d'entrée
+
+- Chargée de collecter et afficher les erreurs
+
+```python
+class Typy:
+    [...]
 
     @property
     def errors(self) -> list[str]:
@@ -123,7 +201,9 @@ class Typy:
             print(error)
 ```
 
-## Analyse statique
+## Premier analyseur
+
+- Fonction utilitaire pour lancer `Typy`
 
 ```python
 def check_files(*paths):

@@ -17,7 +17,8 @@ def karaoke():
 import pathlib, shutil
 shutil.rmtree('assets', ignore_errors=True)
 pathlib.Path('assets').mkdir()
-pathlib.Path('test_mypy.py').unlink(missing_ok=True)
+shutil.rmtree('samples', ignore_errors=True)
+pathlib.Path('samples').mkdir()
 
 %alias mypy ./env/bin/mypy
 ```

@@ -3,6 +3,6 @@
 /env
 /.ipynb_checkpoints
 /assets/
+/samples/
 /*.ipynb
 /run.py
-/test_mypy.py

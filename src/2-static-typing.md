@@ -90,7 +90,7 @@ addition('foo', 'bar')
 - Analyseur statique de types
 
 ```python
-%%writefile test_mypy.py
+%%writefile samples/test_mypy.py
 def addition(a: int, b: int) -> int:
     return a + b
 
@@ -101,7 +101,7 @@ addition('foo', 'bar')
 ```
 
 ```shell
-mypy test_mypy.py
+mypy samples/test_mypy.py
 ```
 
 ## Typage structurel 🦆
