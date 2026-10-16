@@ -1,12 +1,8 @@
 # Fonctions et opérations
 
-## Fonctions et opérations
-
-- Gestion du namespace
-- Définitions de fonctions et appels
-- Opérateurs binaires
-
 ## Espaces de noms
+
+- Les définitions se rapportent à un espace de noms particulier
 
 ```python
 class TypingVisitor(...):
@@ -34,6 +30,8 @@ class TypingVisitor(...):
 ```
 
 ## Espaces de noms
+
+- L'assignation enregistre donc la variable dans l'espace courant
 
 ```python
 def check_assign(visitor, target_node, value_node, annotation_node=None):
@@ -71,6 +69,8 @@ def check_assign(visitor, target_node, value_node, annotation_node=None):
 
 ## Espaces de noms
 
+- Pas de changement sur ce fichier, vérification de routine
+
 ```sh
 %load assets/assignment.py
 ```
@@ -80,6 +80,9 @@ check_files('assets/assignment.py')
 ```
 
 ## Définition de fonction
+
+- Une fonction se définit par son nom, ses paramètres et son type de retour
+    - Elle doit être capacble de reconnaître les types des arguments
 
 ```python
 class Callable(PyObject):
@@ -105,6 +108,8 @@ class Function(Callable):
 
 ## Définition de fonction
 
+- Comme tout objet Python, une fonction a un type
+
 ```python
 [...]
 function_type = Type(name='function')
@@ -112,6 +117,8 @@ Callable.type = function_type
 ```
 
 ## Définition de fonction
+
+- On peut donc enregistrer les données d'une fonction quand on rencontre sa définition
 
 ```python
 class TypingVisitor(...):
@@ -128,6 +135,8 @@ class TypingVisitor(...):
 
 ## Appel de fonction
 
+- L'appel doit faire correspondre les types des arguments avec les annotations des paramètres
+
 ```python
 def check_call(visitor, func, args, node):
     if any(arg is NoValue for arg in args):
@@ -142,6 +151,8 @@ def check_call(visitor, func, args, node):
 
 ## Appel de fonction
 
+- Vérification à lancer lorsqu'on rencontre un appel
+
 ```python
 class TypingVisitor(...):
     [...]
@@ -153,6 +164,8 @@ class TypingVisitor(...):
 ```
 
 ## Appel de fonction
+
+- Nos fonctions sont maintenant comprises par l'analyseur
 
 ```python
 %%writefile assets/functions.py
@@ -175,6 +188,10 @@ check_files('assets/functions.py')
 ```
 
 ## Opérateurs binaires
+
+- On peut ajouter au cas par cas la gestion des opérateurs
+    - Opérateur binaire = 2 opérandes (gauche et droit)
+    - Un peu fastidieux pour le moment
 
 ```python
 def check_operation(visitor, operator, left, right, node):
@@ -199,6 +216,8 @@ def check_operation(visitor, operator, left, right, node):
 
 ## Opérateurs binaires
 
+- Et les brancher à notre visiteur
+
 ```python
 class TypingVisitor(...):
     [...]
@@ -210,6 +229,8 @@ class TypingVisitor(...):
 ```
 
 ## Opérateurs binaires
+
+- Ce qui permet de bien reconnaître les opérations
 
 ```python
 %%writefile assets/operations.py
