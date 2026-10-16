@@ -1,11 +1,9 @@
 # Expressions de types
 
-## Expressions de types
+## Nettoyage du code
 
-- Assignations multiples
-- Types concrets et expressions de types, union de types
-
-## Assignations multiples
+- Nettoyage du visiteur : sortir ce qui peut l'être
+    - comme la vérification de type
 
 ```python
 def check_type(visitor, node):
@@ -17,6 +15,9 @@ def check_type(visitor, node):
 ```
 
 ## Assignations multiples
+
+- Ou la vérification des annotations
+- On en profite pour implémenter la réassignation
 
 ```python
 def check_assign(visitor, target_node, value_node, annotation_node=None):
@@ -53,6 +54,9 @@ def check_assign(visitor, target_node, value_node, annotation_node=None):
 
 ## Assignations multiples
 
+- Implémentation au niveau du visiteur
+    - via la méthode `visit_Assign` complémentaire à `visit_AnnAssign`
+
 ```python
 class TypingVisitor(...):
     [...]
@@ -79,6 +83,8 @@ class TypingVisitor(...):
 
 ## Assignations multiples
 
+- Elles sont bien prises en compte par l'analyseur
+
 ```python
 %%writefile assets/assignment.py
 a: int = 0 # OK
@@ -102,12 +108,13 @@ check_files('assets/assignment.py')
 
 ## Expressions de types
 
+- Une variable peut-être annotée avec bien plus qu'un simple type
+    - Repenser le type comme un ensemble de valeurs autorisées
+
 ```python
 class PyObject:
     type: TypeForm
-```
 
-```python
 class TypeForm(PyObject):
     name: str
     type: typing.ClassVar[Type]
@@ -122,15 +129,20 @@ class TypeForm(PyObject):
         return f'<Type:{self.name}>'
 ```
 
+```python
+[...]
+TypeForm.type = base_type
+```
+
 ## Expressions de types
+
+- Et le type « concret » comme un cas particulier
 
 ```python
 @dataclasses.dataclass(frozen=True)
 class Value(PyObject):
     type: TypeForm
-```
 
-```python
 @dataclasses.dataclass(frozen=True)
 class Type(TypeForm):
     name: str
@@ -146,12 +158,9 @@ class Type(TypeForm):
         return NotImplemented
 ```
 
-```python
-[...]
-TypeForm.type = base_type
-```
-
 ## Expressions de types
+
+- Ce qui nous amène à redéfinir l'absence de valeur / type
 
 ```python
 import functools
@@ -192,6 +201,8 @@ NoValue = _NoValue()
 
 ## Expressions de types
 
+- Et prendre en compte ces expressions de type dans notre vérification
+
 ```python
 def check_type(visitor, node):
     type = visitor.visit(node)
@@ -203,6 +214,8 @@ def check_type(visitor, node):
 
 ## Expressions de types
 
+- Toujours pas de changement visible sur l'analyse
+
 ```sh
 %load assets/assignment.py
 ```
@@ -212,6 +225,8 @@ check_files('assets/assignment.py')
 ```
 
 ## Union de types
+
+- Mais permet l'introduction de l'union de types
 
 ```python
 @dataclasses.dataclass(frozen=True)
@@ -235,15 +250,15 @@ class UnionType(TypeForm):
 
 ## Union de types
 
+- À intégrer directement via l'opérateur d'union (`|`)
+
 ```python
 class TypeForm(...):
     [...]
 
     def __or__(self, rhs):
         return UnionType.from_types(self, rhs)
-```
 
-```python
 @dataclasses.dataclass(frozen=True)
 class UnionType(...):
     [...]
@@ -261,6 +276,8 @@ class UnionType(...):
 
 ## Union de types
 
+- Qui nécessite de traiter l'opération dans le visiteur
+
 ```python
 class TypingVisitor(...):
     [...]
@@ -276,6 +293,8 @@ class TypingVisitor(...):
 ```
 
 ## Union de types
+
+- Et offre plus de possibilités lors du typage
 
 ```python
 %%writefile assets/assignment.py
