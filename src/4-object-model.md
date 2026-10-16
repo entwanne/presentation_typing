@@ -2,28 +2,17 @@
 
 ## Modèle objet de Python
 
-- Types & instances
-- Représentation dans typy :
-    - classes PyObject (objet Python, possède un type), Type & Value
-    - `Type.type = Type`
+- Répliquer le modèle objet de Python pour mieux l'analyser
 
-## Modèle objet de Python
+---
+
+- Une valeur est l'instance d'un type
 
 <div align="center"><img src="img/type_model_schema_1.png" /></div>
 
 ## Modèle objet de Python
 
-<div align="center"><img src="img/type_model_schema_2.png" /></div>
-
-## Modèle objet de Python
-
-<div align="center"><img src="img/type_model_schema_3.png" /></div>
-
-## Modèle objet de Python
-
-<div align="center"><img src="img/type_model_schema_4.png" /></div>
-
-## Modèle objet de Python
+- Une valeur est l'instance d'un type
 
 ```python
 import dataclasses
@@ -31,9 +20,7 @@ import dataclasses
 @dataclasses.dataclass(frozen=True)
 class Value:
     type: type
-```
 
-```python
 class TypingVisitor(...):
     [...]
 
@@ -59,13 +46,25 @@ class TypingVisitor(...):
 
 ## Modèle objet de Python
 
-```python
-class PyObject:
-    type: Type
-```
+- Chaque type hérite d'`object`
+
+<div align="center"><img src="img/type_model_schema_2.png" /></div>
+
+## Modèle objet de Python
+
+- Et chaque type est une instance de `type`
+
+<div align="center"><img src="img/type_model_schema_3.png" /></div>
+
+## Modèle objet de Python
+
+- Et chaque type est une instance de `type`
 
 ```python
 import typing
+
+class PyObject:
+    type: Type
 
 @dataclasses.dataclass(frozen=True)
 class Type(PyObject):
@@ -77,15 +76,21 @@ class Type(PyObject):
 
     def __str__(self) -> str:
         return f'<Type:{self.name}>'
-```
 
-```python
 @dataclasses.dataclass(frozen=True)
 class Value(PyObject):
     type: Type
 ```
 
-## Modèle objet de Python
+## Modèle cyclique
+
+- `type` est lui-même une instance de `type`
+
+<div align="center"><img src="img/type_model_schema_4.png" /></div>
+
+## Modèle cyclique
+
+- `type` est lui-même une instance de `type`
 
 ```python
 [...]
@@ -93,11 +98,9 @@ base_type = Type(name='type')
 Type.type = base_type
 ```
 
-```python
-[...]
-NoType = Type('NoType')
-NoValue = Value(type=NoType)
-```
+## Adaptations au modèle
+
+- Recréons les _builtins_ pour correspondre à notre nouveau modèle
 
 ```python
 [...]
@@ -108,7 +111,20 @@ builtins = {
 }
 ```
 
-## Modèle objet de Python
+---
+
+- Et de quoi représenter l'absence de valeur
+
+```python
+[...]
+NoType = Type('NoType')
+NoValue = Value(type=NoType)
+```
+
+## Adaptations au modèle
+
+- Prise en compte du modèle et des _builtins_ dans l'analyseur
+- Ainsi que des instructions qui n'ont pas de valeur
 
 ```python
 class TypingVisitor(...):
@@ -129,7 +145,9 @@ class TypingVisitor(...):
         return Value(type=builtins[type(node.value).__name__])
 ```
 
-## Modèle objet de Python
+## Adaptations au modèle
+
+- Idem dans la gestion des annotations
 
 ```python
 class TypingVisitor(...):
@@ -160,7 +178,10 @@ class TypingVisitor(...):
         return NoValue
 ```
 
-## Modèle objet de Python
+## Exécution de l'analyseur
+
+- Pas de changement à l'exécution
+    - Mais un modèle plus solide pour la suite
 
 ```sh
 %load assets/assignment.py
