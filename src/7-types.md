@@ -1,14 +1,8 @@
-# Types
-
-## Types
-
-- Les types comme des fonctions
-- Définition de classes
-- Appel de méthodes
-- Définition de méthodes
-- Opérateurs
+# Types et classes
 
 ## Appeler les types
+
+- Un type peut être vu comme une _fonction_ renvoyant une valeur du type demandé
 
 ```python
 def check_call(visitor, func, args, node):
@@ -27,6 +21,8 @@ def check_call(visitor, func, args, node):
 
 ## Appeler les types
 
+- Le premier prototype fonctionne comme attendu
+
 ```python
 %%writefile assets/type_functions.py
 a: int = 3 + int('5') # OK
@@ -40,6 +36,9 @@ check_files('assets/type_functions.py')
 ```
 
 ## Définition de classe
+
+- On étend alors le concept aux types personnalisés, avec la définition de classes
+    - Une classe se définit par son nom et ses parents
 
 ```python
 @dataclasses.dataclass(frozen=True)
@@ -65,6 +64,8 @@ class Type(...):
 
 ## Définition de classe
 
+- La classe est alors enregistrée lorsqu'on rencontre sa définition
+
 ```python
 class TypingVisitor(...):
     [...]
@@ -80,6 +81,8 @@ class TypingVisitor(...):
 ```
 
 ## Définition de classe
+
+- Cela nous autorise à utiliser nos propres types dans les annotations
 
 ```python
 %%writefile assets/classes.py
@@ -113,6 +116,10 @@ check_files('assets/classes.py')
 
 ## Méthodes
 
+- Une classe peut aussi contenir des méthodes
+   - Les méthodes sont simplement des fonctions liées à une instance
+   - Elles reçoivent cette instance en premier argument
+
 ```python
 @dataclasses.dataclass(frozen=True)
 class Method(Callable):
@@ -139,6 +146,8 @@ class Method(Callable):
 
 ## Méthodes
 
+- On permet à tout _callable_ d'être associé à une instance pour former une méthode
+
 ```python
 class Callable(...):
     [...]
@@ -147,7 +156,9 @@ class Callable(...):
         return Method(function=self, value=value)
 ```
 
-## Méthodes
+## Définition de méthodes
+
+- Les méthodes se rapportent à la classe (type) dans laquelle elles sont défininies
 
 ```python
 @dataclasses.dataclass(frozen=True)
@@ -159,7 +170,9 @@ class Type(...):
     methods: dict = dataclasses.field(repr=False, default_factory=dict)
 ```
 
-## Méthodes
+## Définition de méthodes
+
+- Et sont donc découvertes lors de la définition de la classe, dans un espace de noms dédié
 
 ```python
 from collections import ChainMap
@@ -189,7 +202,10 @@ class TypingVisitor(...):
         return NoValue
 ```
 
-## Méthodes
+## Appel de méthodes
+
+- Pour appeler une méthode, il faut d'abord associer la fonction à l'instance
+    - Cela permet le passage automatique de l'instance au paramètre `self`
 
 ```python
 def get_method(value, method_name):
@@ -201,24 +217,9 @@ def get_method(value, method_name):
     return function.bind(value)
 ```
 
-## Méthodes
+## Appel de méthodes
 
-```python
-def check_call(visitor, func, args, node):
-    if any(arg is NoValue for arg in args):
-        return NoValue
-
-    if isinstance(func, Callable) and func.match_args(*args):
-        return func.apply(*args)
-
-    if isinstance(func, TypeForm):
-        return Value(type=func)
-
-    visitor.add_error('Call Error', f'cannot call {getattr(func, 'name', '')} with arg types {", ".join(arg.type.name for arg in args)}', node=node)
-    return NoValue
-```
-
-## Méthodes
+- La méthode est accédée comme un attribut de l'instance
 
 ```python
 class TypingVisitor(...):
@@ -234,7 +235,9 @@ class TypingVisitor(...):
         return NoValue
 ```
 
-## Méthodes
+## Appel de méthodes
+
+- Tout le reste fonctionne comme attendu car les méthodes sont des _callables_
 
 ```python
 %%writefile assets/methods.py
@@ -261,6 +264,9 @@ check_files('assets/methods.py')
 ```
 
 ## Opérateurs en tant que méthodes
+
+- Les opérateurs en eux-mêmes peuvent être vus comme des méthodes
+    - C'est le cas dans le modèle objet de Python
 
 ```python
 [...]
@@ -298,7 +304,15 @@ builtins['str'].methods['__add__'] = Function(
 )
 ```
 
-## Opérateurs en tant que méthodes
+## Opérateurs plus complexes
+
+- Attention, on entre maintenant dans les parties obscures de cette présentation
+- On a besoin de quelques ajustements pour les opérateurs d'union (`__or__`) et d'appel (`__call__`)
+    - Qui nécessitent d'exécuter du code pour déterminer leurs caractéristiques
+
+---
+
+- Une première fonction dont le type de retour (l'application) est défini à la volée
 
 ```python
 import collections.abc
@@ -308,7 +322,9 @@ class ApplicationFunction(Function):
     apply: collections.abc.Callable
 ```
 
-## Opérateurs en tant que méthodes
+## Opérateurs plus complexes
+
+- Et une seconde pour faire dépendre toutes les caractéristiques d'une classe
 
 ```python
 @dataclasses.dataclass(frozen=True)
@@ -334,7 +350,9 @@ class DynamicFunction(Callable):
         return DynamicMethod(function=self, value=value)
 ```
 
-## Opérateurs en tant que méthodes
+## Opérateurs plus complexes
+
+- Avec son type de méthode associé
 
 ```python
 class DynamicMethod(Method):
@@ -349,7 +367,9 @@ class DynamicMethod(Method):
         return self.function.dynamic(self.value).returns
 ```
 
-## Opérateurs en tant que méthodes
+## Opérateurs plus complexes
+
+- On redéfinit alors l'union entre types et l'instanciation (appel) de type
 
 ```python
 [...]
@@ -371,7 +391,9 @@ base_type.methods['__call__'] = DynamicFunction(
 )
 ```
 
-## Opérateurs en tant que méthodes
+## Opérateurs plus complexes
+
+- Idem pour l'appel de fonction
 
 ```python
 [...]
@@ -386,6 +408,8 @@ function_type.methods['__call__'] = DynamicFunction(
 
 ## Opérateurs en tant que méthodes
 
+- On associe les noms de méthodes aux opérateurs
+
 ```python
 operators = {
     ast.BitOr: '__or__',
@@ -395,6 +419,8 @@ operators = {
 ```
 
 ## Opérateurs en tant que méthodes
+
+- On transforme la vérification des opérations pour faire appel aux méthodes associées
 
 ```python
 def check_operation(visitor, operator, args, error_args):
@@ -420,6 +446,8 @@ def check_operation(visitor, operator, args, error_args):
 ```
 
 ## Opérateurs en tant que méthodes
+
+- Et l'on branche tout ça dans le visiteur
 
 ```python
 class TypingVisitor(...):
@@ -455,6 +483,8 @@ class TypingVisitor(...):
 ```
 
 ## Opérateurs en tant que méthodes
+
+- Toujours compatible avec notre fichier d'exemple
 
 ```sh
 %load assets/operations.py
