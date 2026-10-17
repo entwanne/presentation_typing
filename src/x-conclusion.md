@@ -8,10 +8,13 @@ check_files(*Path('assets').glob('*.py'))
 
 ## Mais très incomplet
 
-- Attributs
-- Autres opérations
-- Types composés et vérification récursive
-- Types génériques, protocoles, Any, arguments variadiques
+- Fonctionnalités manquantes :
+    - Gestion des attributs
+    - Autres opérateurs, unaires ou binaires
+    - Types composés et vérification récursive
+    - Types génériques, protocoles, `Any`
+    - Arguments variadiques (`*args`, `**kwargs`)
+    - etc.
 
 ## T'as typé ton Python
 
@@ -22,7 +25,7 @@ karaoke()
 ## Conclusion
 
 - <http://github.com/entwanne/presentation_typing>
-    - Avec support et snippets
+    - Avec support et analyseur complet
 
 <div align="center"><img src="img/qrcode.svg" style="width: 7em;" /></div>
 <div align="center"><img src="img/cc_by_sa.svg" style="width: 5em;" /></div>
