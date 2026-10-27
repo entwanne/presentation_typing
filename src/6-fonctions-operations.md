@@ -82,7 +82,7 @@ check_files('assets/assignment.py')
 ## Définition de fonction
 
 - Une fonction se définit par son nom, ses paramètres et son type de retour
-    - Elle doit être capacble de reconnaître les types des arguments
+    - Elle doit être capable de reconnaître les types des arguments
 
 ```python
 class Callable(PyObject):

@@ -46,6 +46,8 @@ def check_types(func):
         if not isinstance(ret, annotations['return']):
             raise TypeError('Invalid return type')
 
+        return ret
+
     return wrapper
 ```
 

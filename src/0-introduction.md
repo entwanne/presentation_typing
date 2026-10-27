@@ -21,4 +21,6 @@ shutil.rmtree('samples', ignore_errors=True)
 pathlib.Path('samples').mkdir()
 
 %alias mypy ./env/bin/mypy
+
+# Set zoom to 75%
 ```
