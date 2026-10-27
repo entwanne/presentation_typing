@@ -1,13 +1,35 @@
 # Conclusion
 
+## C'est un bon début
+
+```python
+check_files(*Path('assets').glob('*.py'))
+```
+
+## Mais très incomplet
+
+- Fonctionnalités manquantes :
+    - Gestion des attributs
+    - Autres opérateurs, unaires ou binaires
+    - Types composés et vérification récursive
+    - Types génériques, protocoles, `Any`
+    - Arguments variadiques (`*args`, `**kwargs`)
+    - etc.
+
+## T'as typé ton Python
+
+```python
+karaoke()
+```
+
 ## Conclusion
 
-- Python type system is complex
-- Static-typed Python is a subset of Python
-- Avoid specifying too restrictive types for arguments
+- <http://github.com/entwanne/presentation_typing>
+    - Avec support et analyseur complet
 
-## Questions
+<div align="center"><img src="img/qrcode.svg" style="width: 7em;" /></div>
+<div align="center"><img src="img/cc_by_sa.svg" style="width: 5em;" /></div>
 
-## Credits
+---
 
-- Yes, slide titles are based on Celine Dion's songs ¯\\_(ツ)_/¯
+- Des questions ?

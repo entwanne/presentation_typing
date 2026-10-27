@@ -21,25 +21,26 @@ This will always be an empty file in IPython
 }
 
 #notebook {
-    background-color: #F7F7F7;
+    background-color: #FFFAF5;
+    background-image: linear-gradient(rgba(255, 250, 245, 0.9), rgba(255, 250, 245, 0.9)), url("img/background.svg");
+    background-repeat: no-repeat;
+    background-size: contain;
 }
 
-#notebook .text_cell * {
-    color: #424242;
+#notebook .text_cell p, #notebook .text_cell li, #notebook .text_cell a, #notebook .text_cell code {
+    color: #000a29;
 }
 
 #notebook .text_cell h1, #notebook .text_cell h1 * {
-    color: #084561;
-    text-decoration: underline;
-    text-decoration-color: #F8AD32;
+    color: #2454ff;
     text-align: center;
 }
 
 #notebook .text_cell h2, #notebook .text_cell h2 * {
-    color: #ea9408;
+    color: #2454ff;
 }
 
 #notebook .text_cell h3, #notebook .text_cell h3 * {
-    color: #ea9408;
+    color: #2454ff;
     text-align: center;
 }
