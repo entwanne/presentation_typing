@@ -7430,6 +7430,40 @@ main {
     </script>
 <!-- End of mathjax configuration --><!-- Reveal Theme -->
 <link href="https://unpkg.com/reveal.js@4.0.2/dist/theme/simple.css" id="theme" rel="stylesheet"/>
+<style>
+.reveal-viewport {
+    background-color: #FFFAF5;
+    background-image: linear-gradient(rgba(255, 250, 245, 0.9), rgba(255, 250, 245, 0.9)), url("img/background.svg");
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+.reveal p, .reveal li, .reveal a, .reveal code {
+    color: #000a29;
+}
+
+.reveal h1, .reveal h1 * {
+    color: #2454ff;
+    text-align: center;
+}
+
+.reveal h2, .reveal h2 * {
+    color: #2454ff;
+}
+
+.reveal h3, .reveal h3 * {
+    color: #2454ff;
+    text-align: center;
+}
+
+.reveal div.highlight > pre, .reveal div.jp-OutputArea-output > pre {
+    font-size: 10pt;
+}
+
+.reveal div.highlight > pre.small, .reveal div.jp-OutputArea-output > pre.small {
+    font-size: 8pt;
+}
+</style>
 </head>
 <body class="jp-Notebook" data-jp-theme-light="true" data-jp-theme-name="JupyterLab Light">
 <main>
@@ -8323,7 +8357,7 @@ main {
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>test_mypy.py:6: <span class="ansi-red-intense-fg ansi-bold">error:</span> Incompatible types in assignment (expression has type <span class="ansi-bold">"int"</span>, variable has type <span class="ansi-bold">"list[Any]"</span>)  <span class="ansi-yellow-fg">[assignment]</span>
+<pre class="small">test_mypy.py:6: <span class="ansi-red-intense-fg ansi-bold">error:</span> Incompatible types in assignment (expression has type <span class="ansi-bold">"int"</span>, variable has type <span class="ansi-bold">"list[Any]"</span>)  <span class="ansi-yellow-fg">[assignment]</span>
 test_mypy.py:7: <span class="ansi-red-intense-fg ansi-bold">error:</span> Argument 1 to <span class="ansi-bold">"addition"</span> has incompatible type <span class="ansi-bold">"str"</span>; expected <span class="ansi-bold">"int"</span>  <span class="ansi-yellow-fg">[arg-type]</span>
 test_mypy.py:7: <span class="ansi-red-intense-fg ansi-bold">error:</span> Argument 2 to <span class="ansi-bold">"addition"</span> has incompatible type <span class="ansi-bold">"str"</span>; expected <span class="ansi-bold">"int"</span>  <span class="ansi-yellow-fg">[arg-type]</span>
 <span class="ansi-red-intense-fg ansi-bold">Found 3 errors in 1 file (checked 1 source file)</span>
@@ -8837,7 +8871,7 @@ Calling func
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Assignment error on line 2: Trying to assign value of type str to variable b annotated with int
+<pre class="small">Assignment error on line 2: Trying to assign value of type str to variable b annotated with int
 Assignment error on line 4: Trying to assign value of type int to variable c annotated with str
 </pre>
 </div>
@@ -9039,7 +9073,7 @@ Assignment error on line 4: Trying to assign value of type int to variable c ann
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Assignment error on assets/assignment.py::2: Trying to assign value of type str to variable b annotated with int
+<pre class="small">Assignment error on assets/assignment.py::2: Trying to assign value of type str to variable b annotated with int
 Assignment error on assets/assignment.py::4: Trying to assign value of type int to variable c annotated with str
 </pre>
 </div>
@@ -9080,7 +9114,7 @@ Assignment error on assets/assignment.py::4: Trying to assign value of type int 
 <ul>
 <li>Une valeur est l'instance d'un type</li>
 </ul>
-<div align="center"><img alt="No description has been provided for this image" src="img/type_model_schema_1.png"/></div>
+<div align="center"><img alt="No description has been provided for this image" src="img/type_model_schema_1.png" width="400"/></div>
 </div>
 </div>
 </div>
@@ -9147,7 +9181,7 @@ Assignment error on assets/assignment.py::4: Trying to assign value of type int 
 <h2 id="Mod%C3%A8le-objet-de-Python">Modèle objet de Python<a class="anchor-link" href="#Mod%C3%A8le-objet-de-Python">¶</a></h2><ul>
 <li>Chaque type hérite d'<code>object</code></li>
 </ul>
-<div align="center"><img alt="No description has been provided for this image" src="img/type_model_schema_2.png"/></div>
+<div align="center"><img alt="No description has been provided for this image" src="img/type_model_schema_2.png" width="400"/></div>
 </div>
 </div>
 </div>
@@ -9161,7 +9195,7 @@ Assignment error on assets/assignment.py::4: Trying to assign value of type int 
 <h2 id="Mod%C3%A8le-objet-de-Python">Modèle objet de Python<a class="anchor-link" href="#Mod%C3%A8le-objet-de-Python">¶</a></h2><ul>
 <li>Et chaque type est une instance de <code>type</code></li>
 </ul>
-<div align="center"><img alt="No description has been provided for this image" src="img/type_model_schema_3.png"/></div>
+<div align="center"><img alt="No description has been provided for this image" src="img/type_model_schema_3.png" width="400"/></div>
 </div>
 </div>
 </div>
@@ -9220,7 +9254,7 @@ Assignment error on assets/assignment.py::4: Trying to assign value of type int 
 <h2 id="Mod%C3%A8le-cyclique">Modèle cyclique<a class="anchor-link" href="#Mod%C3%A8le-cyclique">¶</a></h2><ul>
 <li><code>type</code> est lui-même une instance de <code>type</code></li>
 </ul>
-<div align="center"><img alt="No description has been provided for this image" src="img/type_model_schema_4.png"/></div>
+<div align="center"><img alt="No description has been provided for this image" src="img/type_model_schema_4.png" width="400"/></div>
 </div>
 </div>
 </div>
@@ -9464,7 +9498,7 @@ Assignment error on assets/assignment.py::4: Trying to assign value of type int 
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Assignment error on assets/assignment.py::2: Trying to assign value of type str to variable b annotated with int
+<pre class="small">Assignment error on assets/assignment.py::2: Trying to assign value of type str to variable b annotated with int
 Assignment error on assets/assignment.py::4: Trying to assign value of type int to variable c annotated with str
 </pre>
 </div>
@@ -9698,7 +9732,7 @@ Assignment error on assets/assignment.py::4: Trying to assign value of type int 
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Assignment error on assets/assignment.py::3: Trying to assign value of type str to variable a annotated with int
+<pre class="small">Assignment error on assets/assignment.py::3: Trying to assign value of type str to variable a annotated with int
 Assignment error on assets/assignment.py::7: Trying to assign value of type int to variable b annotated with str
 Error on assets/assignment.py::9: b variable already defined
 Assignment error on assets/assignment.py::13: Trying to assign value of type int to variable d annotated with str
@@ -9972,7 +10006,7 @@ Assignment error on assets/assignment.py::13: Trying to assign value of type int
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Assignment error on assets/assignment.py::3: Trying to assign value of type str to variable a annotated with int
+<pre class="small">Assignment error on assets/assignment.py::3: Trying to assign value of type str to variable a annotated with int
 Assignment error on assets/assignment.py::7: Trying to assign value of type int to variable b annotated with str
 Error on assets/assignment.py::9: b variable already defined
 Assignment error on assets/assignment.py::13: Trying to assign value of type int to variable d annotated with str
@@ -10185,7 +10219,7 @@ Assignment error on assets/assignment.py::13: Trying to assign value of type int
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Assignment error on assets/assignment.py::3: Trying to assign value of type str to variable a annotated with int
+<pre class="small">Assignment error on assets/assignment.py::3: Trying to assign value of type str to variable a annotated with int
 Assignment error on assets/assignment.py::7: Trying to assign value of type int to variable b annotated with str
 Error on assets/assignment.py::9: b variable already defined
 Assignment error on assets/assignment.py::13: Trying to assign value of type int to variable d annotated with str
@@ -10377,7 +10411,7 @@ Assignment error on assets/assignment.py::18: Trying to assign value of type str
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Assignment error on assets/assignment.py::3: Trying to assign value of type str to variable a annotated with int
+<pre class="small">Assignment error on assets/assignment.py::3: Trying to assign value of type str to variable a annotated with int
 Assignment error on assets/assignment.py::7: Trying to assign value of type int to variable b annotated with str
 Error on assets/assignment.py::9: b variable already defined
 Assignment error on assets/assignment.py::13: Trying to assign value of type int to variable d annotated with str
@@ -10651,7 +10685,7 @@ Assignment error on assets/assignment.py::18: Trying to assign value of type str
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Assignment error on assets/functions.py::5: Trying to assign value of type int to variable b annotated with str
+<pre class="small">Assignment error on assets/functions.py::5: Trying to assign value of type int to variable b annotated with str
 Call Error on assets/functions.py::11: cannot call addition with arg types int, str
 Call Error on assets/functions.py::12: cannot call addition with arg types str, str
 </pre>
@@ -10807,7 +10841,7 @@ Call Error on assets/functions.py::12: cannot call addition with arg types str, 
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Expression error on assets/operations.py::3: Incompatible operation Add for values of types int and str
+<pre class="small">Expression error on assets/operations.py::3: Incompatible operation Add for values of types int and str
 Assignment error on assets/operations.py::6: Trying to assign value of type int to variable b annotated with str
 </pre>
 </div>
@@ -10928,7 +10962,7 @@ Assignment error on assets/operations.py::6: Trying to assign value of type int 
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Expression error on assets/type_functions.py::4: Incompatible operation Add for values of types str and int
+<pre class="small">Expression error on assets/type_functions.py::4: Incompatible operation Add for values of types str and int
 </pre>
 </div>
 </div>
@@ -11040,7 +11074,7 @@ Assignment error on assets/operations.py::6: Trying to assign value of type int 
 <div class="jp-InputPrompt jp-InputArea-prompt">In [89]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="o">%%writefile</span> assets/classes.py
+<div class="highlight hl-ipython3"><pre class="small"><span></span><span class="o">%%writefile</span> assets/classes.py
 <span class="k">class</span><span class="w"> </span><span class="nc">A</span><span class="p">:</span>
     <span class="k">pass</span>
 
@@ -11075,7 +11109,7 @@ Assignment error on assets/operations.py::6: Trying to assign value of type int 
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Writing assets/classes.py
+<pre class="small">Writing assets/classes.py
 </pre>
 </div>
 </div>
@@ -11089,7 +11123,7 @@ Assignment error on assets/operations.py::6: Trying to assign value of type int 
 <div class="jp-InputPrompt jp-InputArea-prompt">In [90]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="n">check_files</span><span class="p">(</span><span class="s1">'assets/classes.py'</span><span class="p">)</span>
+<div class="highlight hl-ipython3"><pre class="small"><span></span><span class="n">check_files</span><span class="p">(</span><span class="s1">'assets/classes.py'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -11102,7 +11136,7 @@ Assignment error on assets/operations.py::6: Trying to assign value of type int 
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Assignment error on assets/classes.py::5: Trying to assign value of type A to variable b annotated with int
+<pre class="small">Assignment error on assets/classes.py::5: Trying to assign value of type A to variable b annotated with int
 Assignment error on assets/classes.py::7: Trying to assign value of type int to variable c annotated with A
 Assignment error on assets/classes.py::16: Trying to assign value of type str to variable g annotated with (A | int)
 Assignment error on assets/classes.py::19: Trying to assign value of type A to variable i annotated with (D | int)
@@ -11428,7 +11462,7 @@ Assignment error on assets/classes.py::22: Trying to assign value of type str to
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Assignment error on assets/methods.py::10: Trying to assign value of type int to variable c annotated with str
+<pre class="small">Assignment error on assets/methods.py::10: Trying to assign value of type int to variable c annotated with str
 Assignment error on assets/methods.py::13: Trying to assign value of type str to variable e annotated with int
 Call Error on assets/methods.py::14: cannot call pouet with arg types int
 Error on assets/methods.py::16: Unknown attribute tutu on object of type A
@@ -11462,7 +11496,7 @@ Call Error on assets/methods.py::16: cannot call  with arg types
 <div class="jp-InputPrompt jp-InputArea-prompt">In [99]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="p">[</span><span class="o">...</span><span class="p">]</span>
+<div class="highlight hl-ipython3"><pre class="small"><span></span><span class="p">[</span><span class="o">...</span><span class="p">]</span>
 <span class="n">builtins</span><span class="p">[</span><span class="s1">'int'</span><span class="p">]</span><span class="o">.</span><span class="n">methods</span><span class="p">[</span><span class="s1">'__init__'</span><span class="p">]</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s1">'__init__'</span><span class="p">,</span>
     <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">builtins</span><span class="p">[</span><span class="s1">'int'</span><span class="p">],</span> <span class="n">builtins</span><span class="p">[</span><span class="s1">'int'</span><span class="p">]</span> <span class="o">|</span> <span class="n">builtins</span><span class="p">[</span><span class="s1">'float'</span><span class="p">]</span> <span class="o">|</span> <span class="n">builtins</span><span class="p">[</span><span class="s1">'str'</span><span class="p">]),</span>
@@ -11895,7 +11929,7 @@ Call Error on assets/methods.py::16: cannot call  with arg types
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Expression Error on assets/operations.py::3: Incompatible operation Add for values of types int and str
+<pre class="small">Expression Error on assets/operations.py::3: Incompatible operation Add for values of types int and str
 Assignment error on assets/operations.py::6: Trying to assign value of type int to variable b annotated with str
 </pre>
 </div>
@@ -11945,7 +11979,7 @@ Assignment error on assets/operations.py::6: Trying to assign value of type int 
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Assignment error on assets/functions.py::5: Trying to assign value of type int to variable b annotated with str
+<pre class="small">Assignment error on assets/functions.py::5: Trying to assign value of type int to variable b annotated with str
 Call Error on assets/functions.py::11: cannot call addition with arg types int, str
 Call Error on assets/functions.py::12: cannot call addition with arg types str, str
 Assignment error on assets/methods.py::10: Trying to assign value of type int to variable c annotated with str
