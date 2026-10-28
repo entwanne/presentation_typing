@@ -1,0 +1,26 @@
+diff --git a/pres.slides.html b/pres.slides.html
+index a32793a..1743490 100644
+--- a/pres.slides.html
++++ b/pres.slides.html
+@@ -7434,8 +7434,8 @@ main {
+ .reveal-viewport {
+     background-color: #FFFAF5;
+     background-image: linear-gradient(rgba(255, 250, 245, 0.9), rgba(255, 250, 245, 0.9)), url("img/background.svg");
+-    background-repeat: no-repeat;
+-    background-size: contain;
++    background-repeat: repeat-y;
++    background-size: 1164.75px;
+ }
+ 
+ .reveal p, .reveal li, .reveal a, .reveal code {
+@@ -12057,9 +12057,7 @@ Assignment error on assets/assignment.py::18: Trying to assign value of type str
+ <div class="jp-OutputArea-child jp-OutputArea-executeResult">
+ <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[111]:</div>
+ <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
+-<video controls="" src="img/karaoke.webm" width="800">
+-      Your browser does not support the <code>video</code> element.
+-    </video>
++<div align="center"><img alt="No description has been provided for this image" src="img/karaoke.png" /></div>
+ </div>
+ </div>
+ </div>
