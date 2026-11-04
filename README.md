@@ -2,7 +2,7 @@
 
 Conférence présentée à la PyConFr 2026.
 
-> Après un tour d'horizon des annotations de types en Python & des types génériques, nous verrons comment mettre en place une analyse dynamique de ceux-ci dans un programme Python, puis comment écrire un analyseur statique de types tel que mypy.
+> Après un tour d'horizon des annotations de types en Python & des types génériques, nous verrons comment mettre en place une analyse dynamique de ceux-ci dans un programme Python, puis comment écrire un analyseur statique de types tel que mypy à l'aide de l'arbre syntaxique.
 
 Le support est disponible à l'adresse <https://entwanne.github.io/presentation_typing/>.  
 L'analyseur statique final est proposé dans [le dossier `typy`](https://github.com/entwanne/presentation_typing/tree/master/typy).
