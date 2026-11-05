@@ -16,12 +16,6 @@ check_files(*Path('assets').glob('*.py'))
     - Arguments variadiques (`*args`, `**kwargs`)
     - etc.
 
-## T'as typé ton Python
-
-```python
-karaoke()
-```
-
 ## Conclusion
 
 - <http://github.com/entwanne/presentation_typing>
@@ -33,3 +27,9 @@ karaoke()
 ---
 
 - Des questions ?
+
+## T'as typé ton Python
+
+```python
+karaoke()
+```
