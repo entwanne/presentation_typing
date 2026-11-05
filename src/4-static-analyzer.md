@@ -1,5 +1,13 @@
 # Écrire un analyseur de types
 
+## Analyse statique
+
+- L'analyse statique permet d'avaluer toutes les branches du programme
+    - analyse le code sans l'exécuter
+    - ne connaît donc pas toutes les conditions / données
+
+- Mypy est un analyseur statique
+
 ## Arbre syntaxique (AST)
 
 - Accéder aux annotations sans exécuter le code
